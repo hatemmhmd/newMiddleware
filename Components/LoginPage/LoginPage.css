@@ -1,0 +1,146 @@
+.LoginPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: absolute;
+    left: 78%;
+    transform: translateX(-100%);
+}
+
+
+.LoginPage .content {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 100%;
+    padding: 50px 0;
+    width: 100%;
+    flex-direction: column;
+}
+
+.LoginPage .content .Logo img {
+    width: 550px;
+}
+
+.LoginPage .content .LoginBtn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.LoginPage .content .LoginBtn button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #000000;
+    color: #ffffff;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    border: 1px solid #000000;
+    transition: 0.3s linear;
+}
+
+.LoginPage .content .LoginBtn button:hover {
+    border: 1px solid #000000;
+    background-color: transparent;
+    color: #000000;
+}
+
+
+.LoginPage .content .LoginBtn p {
+    letter-spacing: 1px;
+    font-size: 18px;
+    text-transform: capitalize;
+    cursor: pointer;
+    color: #231f20;
+    transition: 0.3s linear;
+    font-weight: 700;
+}
+
+.LoginPage .content .LoginBtn p:hover {
+    color: #535353;
+}
+
+.LoginPage .form_wrap {
+    height: 500px;
+    width: 500px;
+    background: white;
+    margin: 50px auto;
+    padding: 125px 0px 0px 100px;
+    outline: 5px solid rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+
+.LoginPage .input_wrap i {
+    position: absolute;
+    right: 11px;
+    top: 50%;
+    font-size: 20px;
+    transform: translateY(-50%);
+    color: #535353;
+}
+
+.LoginPage .input_wrap::after {
+    content: "";
+    display: block;
+    background: #535353;
+    height: 1.5px;
+    width: 38px;
+    transform: rotate(90deg);
+    position: absolute;
+    top: 50%;
+    right: 20px;
+}
+
+.LoginPage input[type="text"],
+.LoginPage input[type="password"] {
+    border: 2px solid #535353;
+    border-radius: 10px;
+    height: 47px;
+    width: 500px;
+    color: #111;
+    font-size: 18px;
+    padding-left: 20px;
+    box-shadow: none;
+    margin: 20px 0;
+}
+
+
+.LoginPage input:focus+label,
+.LoginPage input:valid+label {
+    font-size: 14px;
+    color: #535353;
+    top: 12px;
+    left: 10px;
+    background-color: #ffffff;
+    padding: 0px 5px 0px 5px;
+}
+
+.LoginPage .input_wrap {
+    width: auto;
+    height: auto;
+    position: relative;
+}
+
+.LoginPage .input_wrap label {
+    font-family: arial;
+    font-size: 16px;
+    letter-spacing: 1px;
+    color: #535353;
+    padding: 15px;
+    position: absolute;
+    top: 20px;
+    left: 0;
+    transition: 0.2s ease all;
+    pointer-events: none;
+    text-transform: capitalize;
+}
+
+.LoginPage input[type="text"]:focus,
+.LoginPage input[type="password"]:focus {
+    outline: none;
+}

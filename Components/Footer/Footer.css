@@ -1,0 +1,41 @@
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #231f20;
+    height: 50px;
+    padding: 0 50px;
+}
+
+.footer .bi-c-circle {
+    font-size: 20px;
+    color: #231f20;
+    margin: 0 5px;
+}
+
+.footer p {
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    margin: 0 5px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.footer .footerLinks {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer .footerLinks a {
+    text-decoration: none;
+    text-transform: capitalize;
+    margin: 0 10px;
+    font-weight: 600;
+    color: #231f20;
+    transition: 0.2s linear;
+}
+
+.footer .footerLinks a:hover {
+    color: #535353;
+}

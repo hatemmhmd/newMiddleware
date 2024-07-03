@@ -1,0 +1,91 @@
+.NavBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    padding: 0 100px;
+    border-bottom: 1px solid #caced1;
+}
+
+.NavBar .logo {
+    text-align: center;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.NavBar .chooses {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.NavBar .chooses .dbSelect,
+.NavBar .chooses .tableSelect {
+    margin: 0 30px;
+}
+
+.NavBar .chooses select {
+    appearance: none;
+    width: 100%;
+    font-size: 1.15rem;
+    padding: 0.675em 6em 0.675em 1em;
+    background-color: #fff;
+    border: 1px solid #caced1;
+    border-radius: 0.25rem;
+    color: #000;
+    cursor: pointer;
+}
+
+.NavBar .chooses select option {
+    font-size: 21px;
+    background-color: #caced1;
+    cursor: pointer;
+}
+
+.NavBar .chooses select option:hover {
+    background-color: #8d8d8d !important;
+}
+
+
+.NavBar .description {
+    position: relative;
+}
+
+.NavBar .description button {
+    cursor: pointer;
+    outline: none;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: #8d8d8d;
+    color: #fff;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    font-size: 18px;
+    transition: 0.3s linear;
+}
+
+.NavBar .description .content {
+    position: absolute;
+    background-color: #8d8d8d;
+    width: 250%;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    left: 50%;
+    letter-spacing: 1px;
+    top: 50px;
+    border-radius: 10px;
+    transform: translateX(-50%);
+    font-size: 15px;
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.disabled {
+    pointer-events: none !important;
+    background-color: #caced1 !important;
+}

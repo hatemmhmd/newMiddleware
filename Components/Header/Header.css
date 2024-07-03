@@ -1,0 +1,25 @@
+.Header {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    padding: 50px 10px;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../../Images/Design.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.Header h1 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+    font-size: 25px;
+    color: #231f20;
+    text-align: center;
+}
+
+.Header img {
+    width: 200px;
+}

@@ -1,0 +1,93 @@
+[
+    {
+        "id": 1,
+        "name": "HR",
+        "tables": [
+            {
+                "tableId": 1,
+                "tableName": "Employees",
+                "primaryKey": "EmployeeID",
+                "description": "Description for Employees tables in database HR",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "Employee ID",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 12,
+                        "columnName": "Employee Name",
+                        "dataType": "string"
+                    }
+                ]
+            },
+            {
+                "tableId": 2,
+                "tableName": "Users",
+                "primaryKey": "UserID",
+                "description": "Description for Users tables in database HR",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "UserID",
+                        "dataType": "number"
+                    },
+                    {
+                        "columnId": 1,
+                        "columnName": "User Name",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "User Age",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 3,
+                        "columnName": "Gender",
+                        "dataType": "string"
+                    }
+                ]
+            }
+        ]
+    },
+
+
+    {
+        "id": 2,
+        "name": "Customer",
+        "tables": [
+            {
+                "tableId": 3,
+                "tableName": "Customer Name",
+                "primaryKey": "CustomerID",
+                "description": "Description for Customer Name tables in database Customers",
+                "columns":[
+                    {
+                        "columnId": 1,
+                        "columnName": "CustomerID",
+                        "dataType": "string"
+                    }
+                ]
+            },
+            {
+                "tableId": 2,
+                "tableName": "Customer Age",
+                "primaryKey": "UserID",
+                "description": "Description for Customer Age tables in database Customers",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "Customer Gender",
+                        "dataType": "number"
+                    },
+                    {
+                        "columnId": 1,
+                        "columnName": "Customer Age",
+                        "dataType": "number"
+                    }
+                ]
+            }
+        ]
+    }
+]
