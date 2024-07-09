@@ -50,6 +50,59 @@ function ViewData() {
 export default ViewData
 
 
+=======================================================
+
+
+    import './DataTable.css';
+import userData from '../../Data/UserData.json';
+import { useTable } from '../CustomHook/CustomHook';
+
+const DataTable = () => {
+    const { selectedTable, showData, filterColumn } = useTable();
+
+    const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data;
+
+    const DeleteItem = (index : object) => {
+        console.log(index)
+    }
+
+    return (
+        <>
+            {showData && (
+                <div className='viewData'>
+                    <table>
+                        <thead>
+                            <tr>
+                                {selectedTable?.columns.map((column) => (
+                                    <th key={column.columnId}>{column.columnName}</th>
+                                ))}
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dataFilter?.map((row: any, rowIndex: number) => (
+                                <tr key={rowIndex}>
+                                    {selectedTable?.columns.map((column) => (
+                                        <td key={column.columnId}>{row[column.columnName]}</td>
+                                    ))}
+                                    <td>
+                                        <i className="bi bi-pencil-square" onClick={()=>{DeleteItem(row)}}></i>
+                                        <i className="bi bi-archive"></i>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </>
+    );
+};
+
+export default DataTable;
+
+
+
 
 
 
