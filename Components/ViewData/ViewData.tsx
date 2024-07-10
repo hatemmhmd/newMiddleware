@@ -108,3 +108,59 @@ const DataTable = () => {
 export default DataTable;
 
 
+
+---------------
+
+
+    import React from 'react';
+import './DataTable.css';
+import userData from '../../Data/UserData.json';
+import { useTable } from '../CustomHook/CustomHook';
+import NotFound from '../../Images/no-data-icon.svg';
+
+const DataTable = () => {
+    const { selectedTable, showData, filterColumn } = useTable();
+
+    // Filter the data related to the selected table
+    const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data;
+
+    return (
+        <>
+            {!showData ? (
+                <div className='notFound'>
+                    <img src={NotFound} alt='No Data Found' />
+                    <p>Please select a database and table</p>
+                </div>
+            ) : (
+                <div className='viewData'>
+                    <table>
+                        <thead>
+                            <tr>
+                                {selectedTable?.columns.map((column) => (
+                                    <th key={column.columnId}>{column.columnName}</th>
+                                ))}
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dataFilter?.map((row: any, rowIndex: number) => (
+                                <tr key={rowIndex}>
+                                    {selectedTable?.columns.map((column) => (
+                                        <td key={column.columnId}>{row[column.columnName]}</td>
+                                    ))}
+                                    <td>
+                                        <i className="bi bi-pencil-square"></i>
+                                        <i className="bi bi-archive"></i>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </>
+    );
+};
+
+export default DataTable;
+
