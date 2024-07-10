@@ -201,4 +201,39 @@ const DataTable = () => {
 };
 
 export default DataTable;
+
+
+
+
+
+
+-------------------------------------------
+
+  Argument of type '{ UserID: number; UserName: string; UserAge: number; Gender: string; }[] | { EmployeeID: number; EmployeeName: string; }[] | { CustomerID: number; CustomerName: string; }[] | { OrderID: number; OrderName: string; }[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '{ UserID: number; UserName: string; UserAge: number; Gender: string; }[]' is not assignable to type 'SetStateAction<never[]>'.
+    Type '{ UserID: number; UserName: string; UserAge: number; Gender: string; }[]' is not assignable to type 'never[]'.
+      Type '{ UserID: number; UserName: string; UserAge: number; Gender: string; }' is not assignable to type 'never'.ts(2345)
+const tableData: {
+    UserID: number;
+    UserName: string;
+    UserAge: number;
+    Gender: string;
+}[] | {
+    EmployeeID: number;
+    EmployeeName: string;
+}[] | {
+    CustomerID: number;
+    CustomerName: string;
+}[] | {
+    OrderID: number;
+    OrderName: string;
+}[]
+
+Argument of type '(previousEvents: never[]) => string[]' is not assignable to parameter of type 'SetStateAction<never[]>'.
+  Type '(previousEvents: never[]) => string[]' is not assignable to type '(prevState: never[]) => never[]'.
+    Type 'string[]' is not assignable to type 'never[]'.
+      Type 'string' is not assignable to type 'never'.ts(2345)
+
+
+
   
