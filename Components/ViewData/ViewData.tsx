@@ -289,4 +289,9 @@ const DataTable: React.FC = () => {
 
 export default DataTable;
 
+
+
+Argument of type 'ChangeEvent<HTMLInputElement | HTMLTextAreaElement>' is not assignable to parameter of type 'ChangeEvent<HTMLInputElement>'.
+  Type 'HTMLInputElement | HTMLTextAreaElement' is not assignable to type 'HTMLInputElement'.
+    Type 'HTMLTextAreaElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, capture, and 29 more.ts(2345)
     
