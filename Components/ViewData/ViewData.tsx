@@ -1,174 +1,4 @@
-import './ViewData.css';
-import userData from '../../Data/UserData.json';
-import { useTable } from '../CustomHook/CustomHook';
-import { useEffect, useState } from 'react';
-
-function ViewData() {
-
-
-    const { selectedTable, showData, filterColumn } = useTable();
-
-
-
-    return (
-        <>
-            {showData && (
-                <div className='viewData'>
-                    <table>
-                        <thead>
-                            <tr>
-                                {selectedTable?.columns.map((e) => {
-                                    return (
-                                        <th>{e.columnName}</th>
-                                    )
-                                })}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {userData.map((e) => {
-                                return (
-                                    e.Data.map((e) => {
-                                        return (
-                                            <tr>
-                                                <td>{e.UserID}</td>
-                                                <td>{e.UserName}</td>
-                                                <td>{e.UserAge}</td>
-                                                <td>{e.Gender}</td>
-                                            </tr>
-                                        )
-                                    })
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </>
-    )
-}
-
-export default ViewData
-
-
-=======================================================
-
-    import './DataTable.css';
-import userData from '../../Data/UserData.json';
-import { useTable } from '../CustomHook/CustomHook';
-import NotFounf from '../../Images/no-data-icon.svg'
-
-const DataTable = () => {
-    const { selectedTable, showData, filterColumn } = useTable();
-
-
-    const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data;
-
-
-    return (
-        <>
-
-            <>
-                {!showData &&
-                    <div className='notFound'>
-                        <img src={NotFounf} alt='NotFound' />
-                        <p>please select database and table</p>
-                    </div>}
-            </>
-            {showData && (
-                <div className='viewData'>
-                    <table>
-                        <thead>
-                            <tr>
-                                {selectedTable?.columns.map((column) => (
-                                    <th key={column.columnId}>{column.columnName}</th>
-                                ))}
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {dataFilter?.map((row: any, rowIndex: number) => (
-                                <tr key={rowIndex}>
-                                    {selectedTable?.columns.map((column) => (
-                                        <td key={column.columnId}>{row[column.columnName]}</td>
-                                    ))}
-                                    <td>
-                                        <i className="bi bi-pencil-square"></i>
-                                        <i className="bi bi-archive"></i>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </>
-    );
-};
-
-export default DataTable;
-
-
-
----------------
-
-
-    import React from 'react';
-import './DataTable.css';
-import userData from '../../Data/UserData.json';
-import { useTable } from '../CustomHook/CustomHook';
-import NotFound from '../../Images/no-data-icon.svg';
-
-const DataTable = () => {
-    const { selectedTable, showData, filterColumn } = useTable();
-
-    // Filter the data related to the selected table
-    const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data;
-
-    return (
-        <>
-            {!showData ? (
-                <div className='notFound'>
-                    <img src={NotFound} alt='No Data Found' />
-                    <p>Please select a database and table</p>
-                </div>
-            ) : (
-                <div className='viewData'>
-                    <table>
-                        <thead>
-                            <tr>
-                                {selectedTable?.columns.map((column) => (
-                                    <th key={column.columnId}>{column.columnName}</th>
-                                ))}
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {dataFilter?.map((row: any, rowIndex: number) => (
-                                <tr key={rowIndex}>
-                                    {selectedTable?.columns.map((column) => (
-                                        <td key={column.columnId}>{row[column.columnName]}</td>
-                                    ))}
-                                    <td>
-                                        <i className="bi bi-pencil-square"></i>
-                                        <i className="bi bi-archive"></i>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </>
-    );
-};
-
-export default DataTable;
-
-
-
-----------
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -179,25 +9,46 @@ import {
   Paper,
   IconButton,
   TextField,
+  Button,
 } from '@mui/material';
 import { Edit, Delete, Save } from '@mui/icons-material';
 import './DataTable.css';
 import userData from '../../Data/UserData.json';
-import { useTable } from '../CustomHook/CustomHook';
 import NotFound from '../../Images/no-data-icon.svg';
 
 interface TableRowData {
   [key: string]: any;
 }
 
+const useTable = () => {
+  const [selectedTable, setSelectedTable] = useState<any>(null);
+  const [showData, setShowData] = useState<boolean>(false);
+  const [filterColumn, setFilterColumn] = useState<string>('');
+
+  const handleSelectTable = (table: any) => {
+    setSelectedTable(table);
+    setShowData(true);
+  };
+
+  const handleFilterColumn = (column: string) => {
+    setFilterColumn(column);
+  };
+
+  return { selectedTable, showData, filterColumn, handleSelectTable, handleFilterColumn };
+};
+
 const DataTable: React.FC = () => {
-  const { selectedTable, showData, filterColumn } = useTable();
+  const { selectedTable, showData, filterColumn, handleSelectTable, handleFilterColumn } = useTable();
 
   const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data || [];
 
-  const [tableData, setTableData] = useState<TableRowData[]>(dataFilter);
+  const [tableData, setTableData] = useState<TableRowData[]>([]);
   const [editRowId, setEditRowId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<TableRowData>({});
+
+  useEffect(() => {
+    setTableData(dataFilter);
+  }, [dataFilter]);
 
   const handleEditClick = (row: TableRowData, rowIndex: number) => {
     setEditRowId(rowIndex);
@@ -225,8 +76,17 @@ const DataTable: React.FC = () => {
     }));
   };
 
+  const handlePreviewClick = () => {
+    const selectedTable = userData.find((table) => table.tableName === 'yourTableName');
+    if (selectedTable) {
+      handleSelectTable(selectedTable);
+      handleFilterColumn('yourTableName'); // Update this line with appropriate column name if needed
+    }
+  };
+
   return (
-    <>
+    <div>
+      <Button onClick={handlePreviewClick}>Preview</Button>
       {!showData && (
         <div className='notFound'>
           <img src={NotFound} alt='NotFound' />
@@ -239,7 +99,7 @@ const DataTable: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {selectedTable?.columns.map((column) => (
+                  {selectedTable?.columns.map((column: any) => (
                     <TableCell key={column.columnId}>{column.columnName}</TableCell>
                   ))}
                   <TableCell>Action</TableCell>
@@ -248,7 +108,7 @@ const DataTable: React.FC = () => {
               <TableBody>
                 {tableData.map((row, rowIndex) => (
                   <TableRow key={rowIndex}>
-                    {selectedTable?.columns.map((column) => (
+                    {selectedTable?.columns.map((column: any) => (
                       <TableCell key={column.columnId}>
                         {editRowId === rowIndex ? (
                           <TextField
@@ -283,7 +143,7 @@ const DataTable: React.FC = () => {
           </TableContainer>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
