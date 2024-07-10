@@ -1,98 +1,152 @@
-[
-    {
-        "id": 1,
-        "name": "HR",
-        "tables": [
-            {
-                "tableId": 1,
-                "tableName": "Employees",
-                "primaryKey": "EmployeeID",
-                "description": "Employee Table Contains Details About Employees, Including Their ID",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "EmployeeID",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 12,
-                        "columnName": "EmployeeName",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 2,
-                "tableName": "Users",
-                "primaryKey": "UserID",
-                "description": "The User Table Stores User Details, Such as ID , User Name And Age",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "UserID",
-                        "dataType": "number"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "UserName",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 3,
-                        "columnName": "UserAge",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 4,
-                        "columnName": "Gender",
-                        "dataType": "string"
-                    }
-                ]
-            }
-        ]
-    },
+.viewData {
+  margin: 20px;
+}
+
+.notFound {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.notFound img {
+  width: 150px;
+  height: auto;
+}
+
+.notFound p {
+  font-size: 18px;
+  color: #999;
+}
+
+#events {
+  margin-top: 20px;
+}
+
+#events .caption {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#events ul {
+  list-style: none;
+  padding: 0;
+}
+
+#events ul li {
+  background: #f5f5f5;
+  margin-bottom: 5px;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
 
 
-    {
-        "id": 2,
-        "name": "Customer",
-        "tables": [
-            {
-                "tableId": 3,
-                "tableName": "Customer",
-                "primaryKey": "CustomerID",
-                "description": "The Customer Table Stores Customer Information , Including ID and Name",
-                "columns":[
-                    {
-                        "columnId": 1,
-                        "columnName": "CustomerID",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "CustomerName",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 4,
-                "tableName": "Order",
-                "primaryKey": "UserID",
-                "description": "The Order Table Contains Information About Order, Including Order ID and Order Name",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "OrderID",
-                        "dataType": "number"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "OrderName",
-                        "dataType": "number"
-                    }
-                ]
-            }
-        ]
+import React, { useCallback, useEffect, useState } from 'react';
+import Button from 'devextreme-react/button';
+import DataGrid, { Column, Editing, Paging } from 'devextreme-react/data-grid';
+import { useTable } from '../CustomHook/CustomHook';
+import userData from '../../Data/UserData.json';
+import NotFound from '../../Images/no-data-icon.svg';
+import './DataTable.css';
+
+const DataTable = () => {
+  const { selectedTable, showData, filterColumn } = useTable();
+  
+  const [data, setData] = useState<Array<Record<string, any>>>([]);
+  const [columns, setColumns] = useState<Array<any>>([]);
+  const [events, setEvents] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (filterColumn) {
+      const tableData = userData.find((e) => e.tableName === filterColumn)?.data || [];
+      setData(tableData);
+
+      const tableColumns = selectedTable?.columns.map((column) => ({
+        dataField: column.columnName,
+        dataType: column.dataType === 'number' ? 'number' : 'string',
+      })) || [];
+      setColumns(tableColumns);
     }
-]
+  }, [filterColumn, selectedTable]);
+
+  const logEvent = useCallback((eventName: string) => {
+    setEvents((previousEvents) => [eventName, ...previousEvents]);
+  }, []);
+
+  const clearEvents = useCallback(() => {
+    setEvents([]);
+  }, []);
+
+  const handleRowRemoving = useCallback((e) => {
+    logEvent('RowRemoving');
+    const newData = data.filter((row) => row[selectedTable.primaryKey] !== e.data[selectedTable.primaryKey]);
+    setData(newData);
+  }, [data, selectedTable, logEvent]);
+
+  const handleRowUpdating = useCallback((e) => {
+    logEvent('RowUpdating');
+    const updatedData = data.map((row) => (row[selectedTable.primaryKey] === e.key ? { ...row, ...e.newData } : row));
+    setData(updatedData);
+  }, [data, selectedTable, logEvent]);
+
+  return (
+    <>
+      {!showData && (
+        <div className="notFound">
+          <img src={NotFound} alt="NotFound" />
+          <p>Please select a database and table</p>
+        </div>
+      )}
+      {showData && (
+        <div className="viewData">
+          <DataGrid
+            id="gridContainer"
+            dataSource={data}
+            keyExpr={selectedTable?.primaryKey}
+            allowColumnReordering={true}
+            showBorders={true}
+            onRowRemoving={handleRowRemoving}
+            onRowUpdating={handleRowUpdating}
+            onEditingStart={() => logEvent('EditingStart')}
+            onInitNewRow={() => logEvent('InitNewRow')}
+            onRowInserting={() => logEvent('RowInserting')}
+            onRowInserted={() => logEvent('RowInserted')}
+            onRowUpdated={() => logEvent('RowUpdated')}
+            onSaving={() => logEvent('Saving')}
+            onSaved={() => logEvent('Saved')}
+            onEditCanceling={() => logEvent('EditCanceling')}
+            onEditCanceled={() => logEvent('EditCanceled')}
+          >
+            <Paging enabled={true} />
+            <Editing
+              mode="row"
+              allowUpdating={true}
+              allowDeleting={true}
+              allowAdding={true}
+            />
+            {columns.map((column) => (
+              <Column key={column.dataField} dataField={column.dataField} dataType={column.dataType} />
+            ))}
+            <Column type="buttons">
+              <Button name="edit" />
+              <Button name="delete" />
+            </Column>
+          </DataGrid>
+
+          <div id="events">
+            <div>
+              <div className="caption">Fired events</div>
+              <Button id="clear" text="Clear" onClick={clearEvents} />
+            </div>
+            <ul>
+              {events.map((event, index) => <li key={index}>{event}</li>)}
+            </ul>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default DataTable;
+
+
