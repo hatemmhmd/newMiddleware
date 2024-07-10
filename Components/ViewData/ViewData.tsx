@@ -164,3 +164,129 @@ const DataTable = () => {
 
 export default DataTable;
 
+
+
+----------
+
+import React, { useState } from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  TextField,
+} from '@mui/material';
+import { Edit, Delete, Save } from '@mui/icons-material';
+import './DataTable.css';
+import userData from '../../Data/UserData.json';
+import { useTable } from '../CustomHook/CustomHook';
+import NotFound from '../../Images/no-data-icon.svg';
+
+interface TableRowData {
+  [key: string]: any;
+}
+
+const DataTable: React.FC = () => {
+  const { selectedTable, showData, filterColumn } = useTable();
+
+  const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data || [];
+
+  const [tableData, setTableData] = useState<TableRowData[]>(dataFilter);
+  const [editRowId, setEditRowId] = useState<number | null>(null);
+  const [editFormData, setEditFormData] = useState<TableRowData>({});
+
+  const handleEditClick = (row: TableRowData, rowIndex: number) => {
+    setEditRowId(rowIndex);
+    setEditFormData({ ...row });
+  };
+
+  const handleDeleteClick = (rowIndex: number) => {
+    const updatedData = tableData.filter((_, index) => index !== rowIndex);
+    setTableData(updatedData);
+  };
+
+  const handleSaveClick = () => {
+    const updatedData = tableData.map((row, index) =>
+      index === editRowId ? { ...editFormData } : row
+    );
+    setTableData(updatedData);
+    setEditRowId(null);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    const value = e.target.value;
+    setEditFormData(prevState => ({
+      ...prevState,
+      [field]: value
+    }));
+  };
+
+  return (
+    <>
+      {!showData && (
+        <div className='notFound'>
+          <img src={NotFound} alt='NotFound' />
+          <p>Please select database and table</p>
+        </div>
+      )}
+      {showData && (
+        <div className='viewData'>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {selectedTable?.columns.map((column) => (
+                    <TableCell key={column.columnId}>{column.columnName}</TableCell>
+                  ))}
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tableData.map((row, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {selectedTable?.columns.map((column) => (
+                      <TableCell key={column.columnId}>
+                        {editRowId === rowIndex ? (
+                          <TextField
+                            value={editFormData[column.columnName] || ''}
+                            onChange={(e) => handleInputChange(e, column.columnName)}
+                          />
+                        ) : (
+                          row[column.columnName]
+                        )}
+                      </TableCell>
+                    ))}
+                    <TableCell>
+                      {editRowId === rowIndex ? (
+                        <IconButton onClick={handleSaveClick}>
+                          <Save />
+                        </IconButton>
+                      ) : (
+                        <>
+                          <IconButton onClick={() => handleEditClick(row, rowIndex)}>
+                            <Edit />
+                          </IconButton>
+                          <IconButton onClick={() => handleDeleteClick(rowIndex)}>
+                            <Delete />
+                          </IconButton>
+                        </>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default DataTable;
+
+    
