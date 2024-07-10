@@ -1,90 +1,98 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import Button from 'devextreme-react/button';
-import DataGrid, {
-  Column, Editing, Paging, Lookup,
-} from 'devextreme-react/data-grid';
-import { useTable } from '../CustomHook/CustomHook';
-import userData from '../../Data/UserData.json';
-import NotFound from '../../Images/no-data-icon.svg';
-import './DataTable.css';
+[
+    {
+        "id": 1,
+        "name": "HR",
+        "tables": [
+            {
+                "tableId": 1,
+                "tableName": "Employees",
+                "primaryKey": "EmployeeID",
+                "description": "Employee Table Contains Details About Employees, Including Their ID",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "EmployeeID",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 12,
+                        "columnName": "EmployeeName",
+                        "dataType": "string"
+                    }
+                ]
+            },
+            {
+                "tableId": 2,
+                "tableName": "Users",
+                "primaryKey": "UserID",
+                "description": "The User Table Stores User Details, Such as ID , User Name And Age",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "UserID",
+                        "dataType": "number"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "UserName",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 3,
+                        "columnName": "UserAge",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 4,
+                        "columnName": "Gender",
+                        "dataType": "string"
+                    }
+                ]
+            }
+        ]
+    },
 
-const DataTable = () => {
-  const { selectedTable, showData, filterColumn } = useTable();
 
-  // Define the type for the data state
-  const [data, setData] = useState<Array<Record<string, any>>>([]);
-
-  useEffect(() => {
-    if (filterColumn) {
-      const tableData = userData.find((e) => e.tableName === filterColumn)?.data || [];
-      setData(tableData);
+    {
+        "id": 2,
+        "name": "Customer",
+        "tables": [
+            {
+                "tableId": 3,
+                "tableName": "Customer",
+                "primaryKey": "CustomerID",
+                "description": "The Customer Table Stores Customer Information , Including ID and Name",
+                "columns":[
+                    {
+                        "columnId": 1,
+                        "columnName": "CustomerID",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "CustomerName",
+                        "dataType": "string"
+                    }
+                ]
+            },
+            {
+                "tableId": 4,
+                "tableName": "Order",
+                "primaryKey": "UserID",
+                "description": "The Order Table Contains Information About Order, Including Order ID and Order Name",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "OrderID",
+                        "dataType": "number"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "OrderName",
+                        "dataType": "number"
+                    }
+                ]
+            }
+        ]
     }
-  }, [filterColumn]);
-
-  const [events, setEvents] = useState<string[]>([]);
-
-  const logEvent = useCallback((eventName: string) => {
-    setEvents((previousEvents) => [eventName, ...previousEvents]);
-  }, []);
-
-  const clearEvents = useCallback(() => {
-    setEvents([]);
-  }, []);
-
-  return (
-    <>
-      {!showData && (
-        <div className="notFound">
-          <img src={NotFound} alt="NotFound" />
-          <p>Please select a database and table</p>
-        </div>
-      )}
-      {showData && (
-        <div className="viewData">
-          <DataGrid
-            id="gridContainer"
-            dataSource={data}
-            keyExpr="ID"
-            allowColumnReordering={true}
-            showBorders={true}
-            onEditingStart={() => logEvent('EditingStart')}
-            onInitNewRow={() => logEvent('InitNewRow')}
-            onRowInserting={() => logEvent('RowInserting')}
-            onRowInserted={() => logEvent('RowInserted')}
-            onRowUpdating={() => logEvent('RowUpdating')}
-            onRowUpdated={() => logEvent('RowUpdated')}
-            onRowRemoving={() => logEvent('RowRemoving')}
-            onRowRemoved={() => logEvent('RowRemoved')}
-            onSaving={() => logEvent('Saving')}
-            onSaved={() => logEvent('Saved')}
-            onEditCanceling={() => logEvent('EditCanceling')}
-            onEditCanceled={() => logEvent('EditCanceled')}
-          >
-            <Paging enabled={true} />
-            <Editing
-              mode="row"
-              allowUpdating={true}
-              allowDeleting={true}
-              allowAdding={true}
-            />
-            {selectedTable?.columns.map((column) => (
-              <Column key={column.columnId} dataField={column.columnName} />
-            ))}
-          </DataGrid>
-
-          <div id="events">
-            <div>
-              <div className="caption">Fired events</div>
-              <Button id="clear" text="Clear" onClick={clearEvents} />
-            </div>
-            <ul>
-              {events.map((event, index) => <li key={index}>{event}</li>)}
-            </ul>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export default DataTable;
+]
