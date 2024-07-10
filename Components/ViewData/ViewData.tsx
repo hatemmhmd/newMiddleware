@@ -10,11 +10,15 @@ import {
   IconButton,
   TextField,
   Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import { Edit, Delete, Save } from '@mui/icons-material';
-import './DataTable.css';
-import userData from '../../Data/UserData.json';
-import NotFound from '../../Images/no-data-icon.svg';
+import './DataTable.css'; // Ensure this file exists or remove this line if not needed
+import userData from '../../Data/UserData.json'; // Adjust path as needed
+import NotFound from '../../Images/no-data-icon.svg'; // Ensure this file exists or replace with a valid path
 
 interface TableRowData {
   [key: string]: any;
@@ -24,6 +28,7 @@ const useTable = () => {
   const [selectedTable, setSelectedTable] = useState<any>(null);
   const [showData, setShowData] = useState<boolean>(false);
   const [filterColumn, setFilterColumn] = useState<string>('');
+  const [selectedDatabase, setSelectedDatabase] = useState<string>('');
 
   const handleSelectTable = (table: any) => {
     setSelectedTable(table);
@@ -34,11 +39,16 @@ const useTable = () => {
     setFilterColumn(column);
   };
 
-  return { selectedTable, showData, filterColumn, handleSelectTable, handleFilterColumn };
+  const handleSelectDatabase = (database: string) => {
+    setSelectedDatabase(database);
+    setShowData(false); // Reset the table view when changing database
+  };
+
+  return { selectedTable, showData, filterColumn, handleSelectTable, handleFilterColumn, selectedDatabase, handleSelectDatabase };
 };
 
 const DataTable: React.FC = () => {
-  const { selectedTable, showData, filterColumn, handleSelectTable, handleFilterColumn } = useTable();
+  const { selectedTable, showData, filterColumn, handleSelectTable, handleFilterColumn, selectedDatabase, handleSelectDatabase } = useTable();
 
   const dataFilter = userData.find((e) => e.tableName === filterColumn)?.data || [];
 
@@ -77,16 +87,47 @@ const DataTable: React.FC = () => {
   };
 
   const handlePreviewClick = () => {
-    const selectedTable = userData.find((table) => table.tableName === 'yourTableName');
+    const selectedTable = userData.find((table) => table.tableName === filterColumn && table.database === selectedDatabase);
     if (selectedTable) {
       handleSelectTable(selectedTable);
-      handleFilterColumn('yourTableName'); // Update this line with appropriate column name if needed
     }
   };
 
   return (
     <div>
-      <Button onClick={handlePreviewClick}>Preview</Button>
+      <FormControl fullWidth>
+        <InputLabel>Database</InputLabel>
+        <Select
+          value={selectedDatabase}
+          onChange={(e) => handleSelectDatabase(e.target.value as string)}
+        >
+          {Array.from(new Set(userData.map((data) => data.database))).map((database) => (
+            <MenuItem key={database} value={database}>
+              {database}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl fullWidth>
+        <InputLabel>Table</InputLabel>
+        <Select
+          value={filterColumn}
+          onChange={(e) => handleFilterColumn(e.target.value as string)}
+          disabled={!selectedDatabase}
+        >
+          {userData
+            .filter((data) => data.database === selectedDatabase)
+            .map((table) => (
+              <MenuItem key={table.tableName} value={table.tableName}>
+                {table.tableName}
+              </MenuItem>
+            ))}
+        </Select>
+      </FormControl>
+
+      <Button onClick={handlePreviewClick} disabled={!filterColumn}>Preview</Button>
+
       {!showData && (
         <div className='notFound'>
           <img src={NotFound} alt='NotFound' />
@@ -99,8 +140,8 @@ const DataTable: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  {selectedTable?.columns.map((column: any) => (
-                    <TableCell key={column.columnId}>{column.columnName}</TableCell>
+                  {Object.keys(dataFilter[0] || {}).map((columnName) => (
+                    <TableCell key={columnName}>{columnName}</TableCell>
                   ))}
                   <TableCell>Action</TableCell>
                 </TableRow>
@@ -108,15 +149,15 @@ const DataTable: React.FC = () => {
               <TableBody>
                 {tableData.map((row, rowIndex) => (
                   <TableRow key={rowIndex}>
-                    {selectedTable?.columns.map((column: any) => (
-                      <TableCell key={column.columnId}>
+                    {Object.keys(row).map((columnName) => (
+                      <TableCell key={columnName}>
                         {editRowId === rowIndex ? (
                           <TextField
-                            value={editFormData[column.columnName] || ''}
-                            onChange={(e) => handleInputChange(e, column.columnName)}
+                            value={editFormData[columnName] || ''}
+                            onChange={(e) => handleInputChange(e, columnName)}
                           />
                         ) : (
-                          row[column.columnName]
+                          row[columnName]
                         )}
                       </TableCell>
                     ))}
@@ -148,94 +189,3 @@ const DataTable: React.FC = () => {
 };
 
 export default DataTable;
-
-======================================
-
-[
-    {
-        "database": "HR",
-        "tableName": "Users",
-        "data": [
-            {
-                "UserID": 1,
-                "UserName": "Ammar",
-                "UserAge": 22,
-                "Gender": "Male"
-            },
-            {
-                "UserID": 2,
-                "UserName": "Ali",
-                "UserAge": 32,
-                "Gender": "Male"
-            },
-            {
-                "UserID": 3,
-                "UserName": "Sara",
-                "UserAge": 24,
-                "Gender": "Female"
-            },
-            {
-                "UserID": 4,
-                "UserName": "Sanad",
-                "UserAge": 20,
-                "Gender": "Male"
-            }
-        ]
-    },
-    {
-        "database": "HR",
-        "tableName": "Employees",
-        "data": [
-            {
-                "EmployeeID": 1,
-                "EmployeeName": "Alia"
-            },
-            {
-                "EmployeeID": 2,
-                "EmployeeName": "Ali"
-            },
-            {
-                "EmployeeID": 3,
-                "EmployeeName": "Ammen"
-            }
-        ]
-    },
-    {
-        "database": "Customer",
-        "tableName": "Customer",
-        "data": [
-            {
-                "CustomerID": 1112,
-                "CustomerName": "Alia"
-            },
-            {
-                "CustomerID": 4212,
-                "CustomerName": "Ali"
-            },
-            {
-                "CustomerID": 2301,
-                "CustomerName": "Ammen"
-            }
-        ]
-    },
-    {
-        "database": "Customer",
-        "tableName": "Order",
-        "data": [
-            {
-                "OrderID": 1112,
-                "OrderName": "Order 1"
-            },
-            {
-                "OrderID": 4212,
-                "OrderName": "Order 2"
-            },
-            {
-                "OrderID": 2301,
-                "OrderName": "Order 3"
-            }
-        ]
-    }
-] 
-
-
