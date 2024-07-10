@@ -217,7 +217,7 @@ const DataTable: React.FC = () => {
     setEditRowId(null);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
     const value = e.target.value;
     setEditFormData(prevState => ({
       ...prevState,
@@ -288,10 +288,3 @@ const DataTable: React.FC = () => {
 };
 
 export default DataTable;
-
-
-
-Argument of type 'ChangeEvent<HTMLInputElement | HTMLTextAreaElement>' is not assignable to parameter of type 'ChangeEvent<HTMLInputElement>'.
-  Type 'HTMLInputElement | HTMLTextAreaElement' is not assignable to type 'HTMLInputElement'.
-    Type 'HTMLTextAreaElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, capture, and 29 more.ts(2345)
-    
