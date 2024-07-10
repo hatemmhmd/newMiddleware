@@ -148,3 +148,94 @@ const DataTable: React.FC = () => {
 };
 
 export default DataTable;
+
+======================================
+
+[
+    {
+        "database": "HR",
+        "tableName": "Users",
+        "data": [
+            {
+                "UserID": 1,
+                "UserName": "Ammar",
+                "UserAge": 22,
+                "Gender": "Male"
+            },
+            {
+                "UserID": 2,
+                "UserName": "Ali",
+                "UserAge": 32,
+                "Gender": "Male"
+            },
+            {
+                "UserID": 3,
+                "UserName": "Sara",
+                "UserAge": 24,
+                "Gender": "Female"
+            },
+            {
+                "UserID": 4,
+                "UserName": "Sanad",
+                "UserAge": 20,
+                "Gender": "Male"
+            }
+        ]
+    },
+    {
+        "database": "HR",
+        "tableName": "Employees",
+        "data": [
+            {
+                "EmployeeID": 1,
+                "EmployeeName": "Alia"
+            },
+            {
+                "EmployeeID": 2,
+                "EmployeeName": "Ali"
+            },
+            {
+                "EmployeeID": 3,
+                "EmployeeName": "Ammen"
+            }
+        ]
+    },
+    {
+        "database": "Customer",
+        "tableName": "Customer",
+        "data": [
+            {
+                "CustomerID": 1112,
+                "CustomerName": "Alia"
+            },
+            {
+                "CustomerID": 4212,
+                "CustomerName": "Ali"
+            },
+            {
+                "CustomerID": 2301,
+                "CustomerName": "Ammen"
+            }
+        ]
+    },
+    {
+        "database": "Customer",
+        "tableName": "Order",
+        "data": [
+            {
+                "OrderID": 1112,
+                "OrderName": "Order 1"
+            },
+            {
+                "OrderID": 4212,
+                "OrderName": "Order 2"
+            },
+            {
+                "OrderID": 2301,
+                "OrderName": "Order 3"
+            }
+        ]
+    }
+] 
+
+
