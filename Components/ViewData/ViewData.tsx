@@ -1,4 +1,149 @@
- const columns = useMemo<MRT_ColumnDef<User>[]>(
+import React, { useMemo, useState } from 'react';
+import MaterialReactTable from 'material-react-table';
+
+// Example data structure
+const data = [
+    {
+        "id": 1,
+        "name": "HR",
+        "tables": [
+            {
+                "tableId": 1,
+                "tableName": "Employees",
+                "primaryKey": "EmployeeID",
+                "description": "Employee Table Contains Details About Employees, Including Their ID",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "EmployeeID",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 12,
+                        "columnName": "EmployeeName",
+                        "dataType": "string"
+                    }
+                ]
+            },
+            {
+                "tableId": 2,
+                "tableName": "Users",
+                "primaryKey": "UserID",
+                "description": "The User Table Stores User Details, Such as ID , User Name And Age",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "UserID",
+                        "dataType": "number"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "UserName",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 3,
+                        "columnName": "UserAge",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 4,
+                        "columnName": "Gender",
+                        "dataType": "string"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Customer",
+        "tables": [
+            {
+                "tableId": 3,
+                "tableName": "Customer",
+                "primaryKey": "CustomerID",
+                "description": "The Customer Table Stores Customer Information , Including ID and Name",
+                "columns":[
+                    {
+                        "columnId": 1,
+                        "columnName": "CustomerID",
+                        "dataType": "string"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "CustomerName",
+                        "dataType": "string"
+                    }
+                ]
+            },
+            {
+                "tableId": 4,
+                "tableName": "Order",
+                "primaryKey": "UserID",
+                "description": "The Order Table Contains Information About Order, Including Order ID and Order Name",
+                "columns": [
+                    {
+                        "columnId": 1,
+                        "columnName": "OrderID",
+                        "dataType": "number"
+                    },
+                    {
+                        "columnId": 2,
+                        "columnName": "OrderName",
+                        "dataType": "number"
+                    }
+                ]
+            }
+        ]
+    }
+];
+
+const YourComponent = () => {
+    const [validationErrors, setValidationErrors] = useState({});
+
+    // Extract columns configuration from data
+    const extractColumns = (tableColumns) => {
+        return tableColumns.map(column => ({
+            accessorKey: column.columnName,
+            header: column.columnName,
+            muiEditTextFieldProps: {
+                type: column.dataType === 'number' ? 'number' : 'text',
+                required: true,
+                error: !!validationErrors[column.columnName],
+                helperText: validationErrors[column.columnName],
+                onFocus: () => setValidationErrors({
+                    ...validationErrors,
+                    [column.columnName]: undefined,
+                }),
+            }
+        }));
+    };
+
+    // Assuming you want to generate columns for the first table of the first group
+    const columns = useMemo(() => {
+        const firstTable = data[0].tables[0];
+        return extractColumns(firstTable.columns);
+    }, [validationErrors]);
+
+    // You can change the logic to dynamically select the table you want to display
+
+    return (
+        <MaterialReactTable
+            columns={columns}
+            data={[]} // Your data goes here
+        />
+    );
+};
+
+export default YourComponent;
+
+
+
+
+_______
+
+const columns = useMemo<MRT_ColumnDef<User>[]>(
     () => [
       {
         accessorKey: 'id',
