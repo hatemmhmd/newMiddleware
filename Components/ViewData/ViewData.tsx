@@ -1,200 +1,72 @@
-import React, { useState } from 'react';
-import data from '../../Data/SchemaDB.json';
-import './FilterPanel.css';
-import Example from './Example';
-import { useTable } from '../CustomHook/CustomHook';
-
-const FilterPanel = () => {
-    const [selectedDatabase, setSelectedDatabase] = useState<Database>();
-    const [disabled, setDisabled] = useState(true);
-    const [showDescription, setShowDescription] = useState(false);
-    const [disabledTable, setDisabledTable] = useState(true);
-    const [selectedTable, setSelectedTable] = useState<Table | null>(null);
-    const [showData, setShowData] = useState(false);
-
-    const handleDatabaseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const databaseId = parseInt(event.target.value);
-        const database = data.find(db => db.id === databaseId);
-        setSelectedDatabase(database);
-        if (event.target.value == "NULL") {
-            setShowDescription(false);
-            setShowData(false);
-            setDisabledTable(true);
-        } else {
-            setDisabledTable(false);
-        }
-    };
-
-    const handleTableChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const tableId = parseInt(event.target.value);
-        const table = selectedDatabase?.tables.find(tb => tb.tableId === tableId);
-        setSelectedTable(table);
-        if (event.target.value == "NULL") {
-            setDisabled(true);
-            setShowData(false);
-        } else {
-            setDisabled(false);
-        }
-    };
-
-    const FilterData = () => {
-        setShowData(true);
-    }
-
-    return (
-        <div className='NavBar'>
-            <div className='logo'>
-                <p>middleware<br />system</p>
-            </div>
-
-            <div className='chooses'>
-                <div className='dbSelect'>
-                    <select onChange={handleDatabaseChange}>
-                        <option value="NULL">Select a database</option>
-                        {data.map(db => (
-                            <option key={db.id} value={db.id}>{db.name}</option>
-                        ))}
-                    </select>
-                    <i className="bi bi-caret-down"></i>
-                </div>
-
-                <div className='tableSelect'>
-                    <select onChange={handleTableChange} disabled={disabledTable}>
-                        <option value="NULL">Select a table</option>
-                        {selectedDatabase?.tables.map(tb => (
-                            <option key={tb.tableId} value={tb.tableId}>{tb.tableName}</option>
-                        ))}
-                    </select>
-                    <i className="bi bi-caret-down"></i>
-                </div>
-
-                <div className='description'>
-                    <button onClick={() => { setShowDescription(prev => !prev) }} className={disabled || !selectedDatabase ? "disabled" : ""}>description</button>
-                    {!disabled && showDescription && selectedDatabase && (
-                        <div className='content'>
-                            <i className="bi bi-caret-up-fill"></i>
-                            <h3>{selectedTable?.description}</h3>
-                        </div>
-                    )}
-                </div>
-
-                <div className='preview'>
-                    <button onClick={FilterData} className={disabled || !selectedDatabase ? "disabledPreview" : ""}>preview</button>
-                </div>
-            </div>
-
-            {showData && selectedTable && <Example selectedTable={selectedTable} />}
-        </div>
-    );
-};
-
-export default FilterPanel;
-
----------
-import { useMemo, useState, useEffect } from 'react';
-import { MRT_EditActionButtons, MaterialReactTable, type MRT_ColumnDef, type MRT_TableOptions, useMaterialReactTable } from 'material-react-table';
-import { Box, Button, DialogActions, DialogContent, DialogTitle, IconButton, Tooltip } from '@mui/material';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { type User, usStates } from './data';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-const Example = ({ selectedTable }) => {
-  const [validationErrors, setValidationErrors] = useState<Record<string, string | undefined>>({});
-  
-  const { data: fetchedUsers = [], refetch } = useGetUsers(selectedTable?.tableName);
-
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
-    () => selectedTable?.columns.map(col => ({
-      accessorKey: col.columnName,
-      header: col.columnName,
-      muiEditTextFieldProps: {
-        required: true,
-        error: !!validationErrors[col.columnName],
-        helperText: validationErrors[col.columnName],
-        onFocus: () => setValidationErrors({
-          ...validationErrors,
-          [col.columnName]: undefined,
-        }),
+ const columns = useMemo<MRT_ColumnDef<User>[]>(
+    () => [
+      {
+        accessorKey: 'id',
+        header: 'Id',
+        enableEditing: false,
+        size: 80,
       },
-    })) || [],
-    [validationErrors, selectedTable],
+      {
+        accessorKey: 'firstName',
+        header: 'First Name',
+        muiEditTextFieldProps: {
+          required: true,
+          error: !!validationErrors?.firstName,
+          helperText: validationErrors?.firstName,
+          //remove any previous validation errors when user focuses on the input
+          onFocus: () =>
+            setValidationErrors({
+              ...validationErrors,
+              firstName: undefined,
+            }),
+          //optionally add validation checking for onBlur or onChange
+        },
+      },
+      {
+        accessorKey: 'lastName',
+        header: 'Last Name',
+        muiEditTextFieldProps: {
+          required: true,
+          error: !!validationErrors?.lastName,
+          helperText: validationErrors?.lastName,
+          //remove any previous validation errors when user focuses on the input
+          onFocus: () =>
+            setValidationErrors({
+              ...validationErrors,
+              lastName: undefined,
+            }),
+        },
+      },
+      {
+        accessorKey: 'email',
+        header: 'Email',
+        muiEditTextFieldProps: {
+          type: 'email',
+          required: true,
+          error: !!validationErrors?.email,
+          helperText: validationErrors?.email,
+          //remove any previous validation errors when user focuses on the input
+          onFocus: () =>
+            setValidationErrors({
+              ...validationErrors,
+              email: undefined,
+            }),
+        },
+      },
+      {
+        accessorKey: 'state',
+        header: 'State',
+        editVariant: 'select',
+        editSelectOptions: usStates,
+        muiEditTextFieldProps: {
+          select: true,
+          error: !!validationErrors?.state,
+          helperText: validationErrors?.state,
+        },
+      },
+    ],
+    [validationErrors],
   );
-
-  // Implement CREATE, UPDATE, DELETE hooks and handlers similar to your existing code
-
-  const table = useMaterialReactTable({
-    columns,
-    data: fetchedUsers,
-    createDisplayMode: 'modal',
-    editDisplayMode: 'modal',
-    enableEditing: true,
-    getRowId: (row) => row.id,
-    muiToolbarAlertBannerProps: false,
-    muiTableContainerProps: {
-      sx: { minHeight: '500px' },
-    },
-    onCreatingRowCancel: () => setValidationErrors({}),
-    onCreatingRowSave: handleCreateUser,
-    onEditingRowCancel: () => setValidationErrors({}),
-    onEditingRowSave: handleSaveUser,
-    renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <>
-        <DialogTitle variant="h3">Create New User</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {internalEditComponents}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
-      </>
-    ),
-    renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <>
-        <DialogTitle variant="h3">Edit User</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {internalEditComponents}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
-      </>
-    ),
-    renderRowActions: ({ row, table }) => (
-      <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Edit">
-          <IconButton onClick={() => table.setEditingRow(row)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    ),
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Button
-        variant="contained"
-        onClick={() => {
-          table.setCreatingRow(true);
-        }}
-      >
-        Create New User
-      </Button>
-    ),
-    state: {
-      isLoading: isLoadingUsers,
-      isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
-      showAlertBanner: isLoadingUsersError,
-      showProgressBars: isFetchingUsers,
-    },
-  });
-
-  return <MaterialReactTable table={table} />;
-};
-
 
 --------
 
