@@ -1,12 +1,1058 @@
-.viewData {
-    padding: 50px;
-}
-
-table {
-    width: 100%;
-}
-
-table td {
-    text-align: center;
-    padding: 15px 0;
-}
+[
+    {
+        "id": 1,
+        "SystemName": "Reflect",
+        "Country": "Jordan",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 10,
+                    "errors": 0,
+                    "warnings": 200,
+                    "PartiallyExecuted": 100
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "SystemName": "Reflect",
+        "Country": "Palestine",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domsteic Transfer",
+                "status": {
+                    "success": 10,
+                    "errors": 30,
+                    "warnings": 0,
+                    "PartiallyExecuted": 20
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "SystemName": "Reflect",
+        "Country": "Lebanon",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 10,
+                    "errors": 10,
+                    "warnings": 10,
+                    "PartiallyExecuted": 8
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "SystemName": "Reflect",
+        "Country": "Lebanon",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 30,
+                    "errors": 200,
+                    "warnings": 10,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "SystemName": "Reflect",
+        "Country": "Jordan",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 100,
+                    "errors": 20,
+                    "warnings": 10,
+                    "PartiallyExecuted": 22
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "SystemName": "Reflect",
+        "Country": "Palestine",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 10,
+                    "errors": 0,
+                    "warnings": 100,
+                    "PartiallyExecuted": 110
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "SystemName": "Reflect",
+        "Country": "Lebanon",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 100,
+                    "errors": 40,
+                    "warnings": 0,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "SystemName": "Reflect",
+        "Country": "Jordan",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 0,
+                    "errors": 0,
+                    "warnings": 10,
+                    "PartiallyExecuted": 40
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 100,
+        "SystemName": "Arabia",
+        "Country": "Jordan",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 72,
+                    "errors": 11,
+                    "warnings": 37,
+                    "PartiallyExecuted": 20
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "SystemName": "Arabia",
+        "Country": "Jordan",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domestic Transfer",
+                "status": {
+                    "success": 44,
+                    "errors": 28,
+                    "warnings": 9,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "SystemName": "Arabia",
+        "Country": "UAE",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 59,
+                    "errors": 4,
+                    "warnings": 13,
+                    "PartiallyExecuted": 19
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "SystemName": "Arabia",
+        "Country": "UAE",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 85,
+                    "errors": 16,
+                    "warnings": 3,
+                    "PartiallyExecuted": 20
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "SystemName": "Arabia",
+        "Country": "UAE",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 95,
+                    "errors": 31,
+                    "warnings": 48,
+                    "PartiallyExecuted": 90
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "SystemName": "Arabia",
+        "Country": "UAE",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 67,
+                    "errors": 15,
+                    "warnings": 112,
+                    "PartiallyExecuted": 100
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "SystemName": "Arabia",
+        "Country": "Iraq",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 10,
+                    "errors": 10,
+                    "warnings": 10,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "SystemName": "Arabia",
+        "Country": "Iraq",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 18,
+                    "errors": 60,
+                    "warnings": 20,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 17,
+        "SystemName": "FundBot",
+        "Country": "Iraq",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 16,
+                    "errors": 10,
+                    "warnings": 31,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "SystemName": "FundBot",
+        "Country": "UEA",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domestic Transfer",
+                "status": {
+                    "success": 34,
+                    "errors": 7,
+                    "warnings": 43,
+                    "PartiallyExecuted": 29
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
