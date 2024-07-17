@@ -1,3 +1,7 @@
+https://localhost:7249/data
+
+
+-------
 import React from 'react';
 import 'devextreme/data/odata/store';
 import DataGrid, {
