@@ -1,3 +1,43 @@
+
+[
+  {
+    "systemID": 1,
+    "pirid": 1,
+    "systemName": "Reflect",
+    "country": "Jordan",
+    "isActive": true
+  },
+  {
+    "systemID": 1,
+    "pirid": 1,
+    "systemName": "Reflect",
+    "country": "Jordan",
+    "isActive": true
+  },
+  {
+    "systemID": 1,
+    "pirid": 1,
+    "systemName": "Reflect",
+    "country": "Jordan",
+    "isActive": true
+  },
+  {
+    "systemID": 1,
+    "pirid": 1,
+    "systemName": "Reflect",
+    "country": "Jordan",
+    "isActive": false
+  },
+  {
+    "systemID": 1,
+    "pirid": 1,
+    "systemName": "Reflect",
+    "country": "Jordan",
+    "isActive": false
+  }
+]
+
+--------
 using Microsoft.AspNetCore.Mvc;
  
 namespace PIR.API.Controllers
