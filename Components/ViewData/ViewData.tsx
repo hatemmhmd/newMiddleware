@@ -1,4 +1,144 @@
-https://localhost:7249/data
+import React, { useState, useContext } from 'react';
+import 'devextreme/data/odata/store';
+import DataGrid, {
+  Column,
+  Pager,
+  Paging,
+  FilterRow
+} from 'devextreme-react/data-grid';
+import { CheckContext } from '../CutomHook/CustomHookProvider';
+import { useNavigate } from 'react-router-dom';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import '../Systems/System.css';
+
+export default function Task() {
+  const { setDateTime, setSelectedModule } = useContext(CheckContext);
+  const navigate = useNavigate();
+
+  const initialSystems = [
+    { name: 'Arabia', loading: false, startTime: '', endTime: '' },
+    { name: 'FundBot', loading: false, startTime: '', endTime: '' },
+    { name: 'COB', loading: false, startTime: '', endTime: '' },
+    { name: 'Helios', loading: false, startTime: '', endTime: '' },
+    { name: 'Reflect', loading: false, startTime: '', endTime: '' },
+  ];
+
+  const [systems, setSystems] = useState(initialSystems);
+
+  const sortSystems = (systemsArray) => {
+    return systemsArray.sort((a, b) => (a.loading === b.loading) ? 0 : a.loading ? -1 : 1);
+  };
+
+  const ifuserCheck = (index) => {
+    const system = systems[index];
+    if (!system.startTime) {
+      toast.error('Please Enter Start Date Time..', {
+        position: "bottom-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        className: 'custom-toast',
+        transition: Bounce,
+      });
+      return;
+    }
+    const newSystems = [...systems];
+    newSystems[index].loading = true;
+    setSystems(sortSystems(newSystems));
+  };
+
+  const handleClick = (index) => {
+    const system = systems[index];
+    setSelectedModule(system.name);
+    setDateTime(system.startTime);
+    navigate('/DataPage');
+  };
+
+  const handleInputChange = (index, field, value) => {
+    const newSystems = [...systems];
+    newSystems[index][field] = value;
+    if (field === 'startTime' && typeof value === 'string') {
+      if (newSystems[index].endTime && new Date(value) >= new Date(newSystems[index].endTime)) {
+        newSystems[index].endTime = '';
+      }
+    }
+    setSystems(sortSystems(newSystems));
+  };
+
+  const handleStop = (index) => {
+    const newSystems = [...systems];
+    newSystems[index].loading = false;
+    newSystems[index].startTime = '';
+    newSystems[index].endTime = '';
+    setSystems(sortSystems(newSystems));
+  };
+
+  return (
+    <React.Fragment>
+      <h2 className={'content-block'}>Systems</h2>
+      <ToastContainer />
+      <DataGrid
+        className={'dx-card wide-card'}
+        dataSource={systems}
+        showBorders={false}
+        focusedRowEnabled={true}
+        defaultFocusedRowIndex={0}
+        columnAutoWidth={true}
+        columnHidingEnabled={true}
+        rowAlternationEnabled={true}
+      >
+        <Paging defaultPageSize={10} />
+        <Pager showPageSizeSelector={true} showInfo={true} />
+        <FilterRow visible={true} />
+
+        <Column dataField={'name'} caption={'System'} width={150} />
+        <Column
+          dataField={'startTime'}
+          caption={'Start Time'}
+          cellRender={({ data, value, setValue }) => (
+            <input
+              type='datetime-local'
+              value={value}
+              onChange={(e) => handleInputChange(data.__key__, 'startTime', e.target.value)}
+              disabled={data.loading}
+            />
+          )}
+        />
+        <Column
+          dataField={'endTime'}
+          caption={'End Time'}
+          cellRender={({ data, value, setValue }) => (
+            <input
+              type='datetime-local'
+              value={value}
+              min={data.startTime}
+              onChange={(e) => handleInputChange(data.__key__, 'endTime', e.target.value)}
+              disabled={data.loading}
+            />
+          )}
+        />
+        <Column
+          caption={'Action'}
+          cellRender={({ data }) => (
+            data.loading ? (
+              <div>
+                <button onClick={() => handleStop(data.__key__)}>Stop</button>
+                <button onClick={() => handleClick(data.__key__)}>Details</button>
+              </div>
+            ) : (
+              <button onClick={() => ifuserCheck(data.__key__)}>Start</button>
+            )
+          )}
+        />
+      </DataGrid>
+    </React.Fragment>
+  );
+}
 
 
 -------
