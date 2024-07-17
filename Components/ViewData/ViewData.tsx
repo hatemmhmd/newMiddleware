@@ -1,313 +1,2408 @@
-import React, { useMemo, useState } from 'react';
-import MaterialReactTable from 'material-react-table';
+import React from 'react';
+import 'devextreme/data/odata/store';
+import DataGrid, {
+  Column,
+  Pager,
+  Paging,
+  FilterRow,
+  Lookup
+} from 'devextreme-react/data-grid';
 
-// Example data structure
-const data = [
-    {
-        "id": 1,
-        "name": "HR",
-        "tables": [
-            {
-                "tableId": 1,
-                "tableName": "Employees",
-                "primaryKey": "EmployeeID",
-                "description": "Employee Table Contains Details About Employees, Including Their ID",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "EmployeeID",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 12,
-                        "columnName": "EmployeeName",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 2,
-                "tableName": "Users",
-                "primaryKey": "UserID",
-                "description": "The User Table Stores User Details, Such as ID , User Name And Age",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "UserID",
-                        "dataType": "number"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "UserName",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 3,
-                        "columnName": "UserAge",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 4,
-                        "columnName": "Gender",
-                        "dataType": "string"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "name": "Customer",
-        "tables": [
-            {
-                "tableId": 3,
-                "tableName": "Customer",
-                "primaryKey": "CustomerID",
-                "description": "The Customer Table Stores Customer Information , Including ID and Name",
-                "columns":[
-                    {
-                        "columnId": 1,
-                        "columnName": "CustomerID",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "CustomerName",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 4,
-                "tableName": "Order",
-                "primaryKey": "UserID",
-                "description": "The Order Table Contains Information About Order, Including Order ID and Order Name",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "OrderID",
-                        "dataType": "number"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "OrderName",
-                        "dataType": "number"
-                    }
-                ]
-            }
-        ]
-    }
-];
+export default function Task() {
+  return (
+    <React.Fragment>
+      <h2 className={'content-block'}>Tasks</h2>
 
-const YourComponent = () => {
-    const [validationErrors, setValidationErrors] = useState({});
+      <DataGrid
+        className={'dx-card wide-card'}
+        dataSource={dataSource as any}
+        showBorders={false}
+        focusedRowEnabled={true}
+        defaultFocusedRowIndex={0}
+        columnAutoWidth={true}
+        columnHidingEnabled={true}
+      >
+        <Paging defaultPageSize={10} />
+        <Pager showPageSizeSelector={true} showInfo={true} />
+        <FilterRow visible={true} />
 
-    // Extract columns configuration from data
-    const extractColumns = (tableColumns) => {
-        return tableColumns.map(column => ({
-            accessorKey: column.columnName,
-            header: column.columnName,
-            muiEditTextFieldProps: {
-                type: column.dataType === 'number' ? 'number' : 'text',
-                required: true,
-                error: !!validationErrors[column.columnName],
-                helperText: validationErrors[column.columnName],
-                onFocus: () => setValidationErrors({
-                    ...validationErrors,
-                    [column.columnName]: undefined,
-                }),
-            }
-        }));
-    };
-
-    // Assuming you want to generate columns for the first table of the first group
-    const columns = useMemo(() => {
-        const firstTable = data[0].tables[0];
-        return extractColumns(firstTable.columns);
-    }, [validationErrors]);
-
-    // You can change the logic to dynamically select the table you want to display
-
-    return (
-        <MaterialReactTable
-            columns={columns}
-            data={[]} // Your data goes here
+        <Column dataField={'Task_ID'} width={90} hidingPriority={2} />
+        <Column
+          dataField={'Task_Subject'}
+          width={190}
+          caption={'Subject'}
+          hidingPriority={8}
         />
-    );
+        <Column
+          dataField={'Task_Status'}
+          caption={'Status'}
+          hidingPriority={6}
+        />
+        <Column
+          dataField={'Task_Priority'}
+          caption={'Priority'}
+          hidingPriority={5}
+        >
+          <Lookup
+            dataSource={priorities}
+            valueExpr={'value'}
+            displayExpr={'name'}
+          />
+        </Column>
+        <Column
+          dataField={'ResponsibleEmployee.Employee_Full_Name'}
+          caption={'Assigned To'}
+          allowSorting={false}
+          hidingPriority={7}
+        />
+        <Column
+          dataField={'Task_Start_Date'}
+          caption={'Start Date'}
+          dataType={'date'}
+          hidingPriority={3}
+        />
+        <Column
+          dataField={'Task_Due_Date'}
+          caption={'Due Date'}
+          dataType={'date'}
+          hidingPriority={4}
+        />
+        <Column
+          dataField={'Task_Priority'}
+          caption={'Priority'}
+          name={'Priority'}
+          hidingPriority={1}
+        />
+        <Column
+          dataField={'Task_Completion'}
+          caption={'Completion'}
+          hidingPriority={0}
+        />
+      </DataGrid>
+    </React.Fragment>
+  )
+}
+
+const dataSource = {
+  store: {
+    version: 2,
+    type: 'odata',
+    key: 'Task_ID',
+    url: 'https://js.devexpress.com/Demos/DevAV/odata/Tasks'
+  },
+  expand: 'ResponsibleEmployee',
+  select: [
+    'Task_ID',
+    'Task_Subject',
+    'Task_Start_Date',
+    'Task_Due_Date',
+    'Task_Status',
+    'Task_Priority',
+    'Task_Completion',
+    'ResponsibleEmployee/Employee_Full_Name'
+  ]
 };
 
-export default YourComponent;
+const priorities = [
+  { name: 'High', value: 4 },
+  { name: 'Urgent', value: 3 },
+  { name: 'Normal', value: 2 },
+  { name: 'Low', value: 1 }
+];
 
 
-
-
-_______
-
-const columns = useMemo<MRT_ColumnDef<User>[]>(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'Id',
-        enableEditing: false,
-        size: 80,
-      },
-      {
-        accessorKey: 'firstName',
-        header: 'First Name',
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.firstName,
-          helperText: validationErrors?.firstName,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              firstName: undefined,
-            }),
-          //optionally add validation checking for onBlur or onChange
-        },
-      },
-      {
-        accessorKey: 'lastName',
-        header: 'Last Name',
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.lastName,
-          helperText: validationErrors?.lastName,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              lastName: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: 'email',
-        header: 'Email',
-        muiEditTextFieldProps: {
-          type: 'email',
-          required: true,
-          error: !!validationErrors?.email,
-          helperText: validationErrors?.email,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              email: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: 'state',
-        header: 'State',
-        editVariant: 'select',
-        editSelectOptions: usStates,
-        muiEditTextFieldProps: {
-          select: true,
-          error: !!validationErrors?.state,
-          helperText: validationErrors?.state,
-        },
-      },
-    ],
-    [validationErrors],
-  );
-
---------
+---------------------------------------------------
 
 
 [
     {
         "id": 1,
-        "name": "HR",
-        "tables": [
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
             {
-                "tableId": 1,
-                "tableName": "Employees",
-                "primaryKey": "EmployeeID",
-                "description": "Employee Table Contains Details About Employees, Including Their ID",
-                "columns": [
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 10,
+                    "errors": 0,
+                    "warnings": 200,
+                    "PartiallyExecuted": 100
+                },
+                "detailedStatus": [
                     {
-                        "columnId": 1,
-                        "columnName": "EmployeeID",
-                        "dataType": "string"
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     },
                     {
-                        "columnId": 12,
-                        "columnName": "EmployeeName",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 2,
-                "tableName": "Users",
-                "primaryKey": "UserID",
-                "description": "The User Table Stores User Details, Such as ID , User Name And Age",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "UserID",
-                        "dataType": "number"
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     },
                     {
-                        "columnId": 2,
-                        "columnName": "UserName",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 3,
-                        "columnName": "UserAge",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 4,
-                        "columnName": "Gender",
-                        "dataType": "string"
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     }
                 ]
             }
         ]
     },
-
-
     {
         "id": 2,
-        "name": "Customer",
-        "tables": [
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
             {
-                "tableId": 3,
-                "tableName": "Customer",
-                "primaryKey": "CustomerID",
-                "description": "The Customer Table Stores Customer Information , Including ID and Name",
-                "columns":[
+                "moduleName": "Domsteic Transfer",
+                "status": {
+                    "success": 10,
+                    "errors": 30,
+                    "warnings": 0,
+                    "PartiallyExecuted": 20
+                },
+                "detailedStatus": [
                     {
-                        "columnId": 1,
-                        "columnName": "CustomerID",
-                        "dataType": "string"
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     },
                     {
-                        "columnId": 2,
-                        "columnName": "CustomerName",
-                        "dataType": "string"
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     }
                 ]
-            },
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
             {
-                "tableId": 4,
-                "tableName": "Order",
-                "primaryKey": "UserID",
-                "description": "The Order Table Contains Information About Order, Including Order ID and Order Name",
-                "columns": [
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 10,
+                    "errors": 10,
+                    "warnings": 10,
+                    "PartiallyExecuted": 8
+                },
+                "detailedStatus": [
                     {
-                        "columnId": 1,
-                        "columnName": "OrderID",
-                        "dataType": "number"
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     },
                     {
-                        "columnId": 2,
-                        "columnName": "OrderName",
-                        "dataType": "number"
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 4,
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 30,
+                    "errors": 200,
+                    "warnings": 10,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 5,
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 100,
+                    "errors": 20,
+                    "warnings": 10,
+                    "PartiallyExecuted": 22
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 6,
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 10,
+                    "errors": 0,
+                    "warnings": 100,
+                    "PartiallyExecuted": 110
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 7,
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 100,
+                    "errors": 40,
+                    "warnings": 0,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 8,
+        "SystemName": "Reflect",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 0,
+                    "errors": 0,
+                    "warnings": 10,
+                    "PartiallyExecuted": 40
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 100,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 72,
+                    "errors": 11,
+                    "warnings": 37,
+                    "PartiallyExecuted": 20
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 9,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domestic Transfer",
+                "status": {
+                    "success": 44,
+                    "errors": 28,
+                    "warnings": 9,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 10,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 59,
+                    "errors": 4,
+                    "warnings": 13,
+                    "PartiallyExecuted": 19
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 11,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 85,
+                    "errors": 16,
+                    "warnings": 3,
+                    "PartiallyExecuted": 20
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 12,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 95,
+                    "errors": 31,
+                    "warnings": 48,
+                    "PartiallyExecuted": 90
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 13,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 67,
+                    "errors": 15,
+                    "warnings": 112,
+                    "PartiallyExecuted": 100
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 14,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 10,
+                    "errors": 10,
+                    "warnings": 10,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 15,
+        "SystemName": "Arabia",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 18,
+                    "errors": 60,
+                    "warnings": 20,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 17,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 16,
+                    "errors": 10,
+                    "warnings": 31,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 18,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domestic Transfer",
+                "status": {
+                    "success": 34,
+                    "errors": 7,
+                    "warnings": 43,
+                    "PartiallyExecuted": 29
+                    
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 19,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 76,
+                    "errors": 13,
+                    "warnings": 28,
+                    "PartiallyExecuted": 19
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 20,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 55,
+                    "errors": 89,
+                    "warnings": 17,
+                    "PartiallyExecuted": 16
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 21,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 94,
+                    "errors": 17,
+                    "warnings": 35,
+                    "PartiallyExecuted": 40
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 22,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 53,
+                    "errors": 66,
+                    "warnings": 12,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 23,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 33,
+                    "errors": 57,
+                    "warnings": 38,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "SystemName": "FundBot",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 66,
+                    "errors": 73,
+                    "warnings": 27,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 25,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 85,
+                    "errors": 7,
+                    "warnings": 49,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 26,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domestic Transfer",
+                "status": {
+                    "success": 32,
+                    "errors": 63,
+                    "warnings": 75,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 27,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 74,
+                    "errors": 22,
+                    "warnings": 11,
+                    "PartiallyExecuted": 60
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 28,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 46,
+                    "errors": 18,
+                    "warnings": 82,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 29,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 92,
+                    "errors": 4,
+                    "warnings": 60,
+                    "PartiallyExecuted": 15
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 30,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 61,
+                    "errors": 31,
+                    "warnings": 19,
+                    "PartiallyExecuted": 90
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 43,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 36,
+                    "errors": 17,
+                    "warnings": 28,
+                    "PartiallyExecuted": 100
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 24,
+        "SystemName": "Helios",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 60,
+                    "errors": 15,
+                    "warnings": 20,
+                    "PartiallyExecuted": 30
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 31,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Salaries",
+                "status": {
+                    "success": 62,
+                    "errors": 41,
+                    "warnings": 73,
+                    "PartiallyExecuted": 100
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 32,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Domestic Transfer",
+                "status": {
+                    "success": 83,
+                    "errors": 25,
+                    "warnings": 57,
+                    "Partially Executed": 55 
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 33,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Abroad Transfers",
+                "status": {
+                    "success": 14,
+                    "errors": 93,
+                    "warnings": 36,
+                    "PartiallyExecuted": 70
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 34,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Accounts",
+                "status": {
+                    "success": 70,
+                    "errors": 11,
+                    "warnings": 89,
+                    "PartiallyExecuted": 61
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 35,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "QuickPay",
+                "status": {
+                    "success": 41,
+                    "errors": 87,
+                    "warnings": 5,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 36,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Document Manager",
+                "status": {
+                    "success": 58,
+                    "errors": 40,
+                    "warnings": 94,
+                    "PartiallyExecuted": 15
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 37,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "CLIQ",
+                "status": {
+                    "success": 100,
+                    "errors": 40,
+                    "warnings": 0,
+                    "PartiallyExecuted": 0
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 38,
+        "SystemName": "COB",
+        "timeRange": {
+            "start": "2023-12-10T23:00:00",
+            "end": "2023-12-11T00:00:00"
+        },
+        "modules": [
+            {
+                "moduleName": "Company Switching",
+                "status": {
+                    "success": 10,
+                    "errors": 40,
+                    "warnings": 20,
+                    "PartiallyExecuted": 10
+                },
+                "detailedStatus": [
+                    {
+                        "statusType": "success",
+                        "details": [
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "succsee": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "failure",
+                        "details": [
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "error": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
+                    },
+                    {
+                        "statusType": "warning",
+                        "details": [
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            },
+                            {
+                                "warning": "Neobanking/customer-experience/v2/consents"
+                            }
+                        ]
                     }
                 ]
             }
@@ -316,566 +2411,135 @@ const columns = useMemo<MRT_ColumnDef<User>[]>(
 ]
 
 
-------------------------------------- 
+--------------------
+import { useContext, useState } from 'react';
+import '../Systems/System.css';
+import { CheckContext } from '../CutomHook/CustomHookProvider';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
 
-  [
-    {
-        "database": "HR",
-        "tableName": "Users",
-        "data": [
-            {
-                "UserID": 1,
-                "UserName": "Ammar",
-                "UserAge": 22,
-                "Gender": "Male"
-            },
-            {
-                "UserID": 2,
-                "UserName": "Ali",
-                "UserAge": 32,
-                "Gender": "Male"
-            },
-            {
-                "UserID": 3,
-                "UserName": "Sara",
-                "UserAge": 24,
-                "Gender": "Female"
-            },
-            {
-                "UserID": 4,
-                "UserName": "Sanad",
-                "UserAge": 20,
-                "Gender": "Male"
-            }
-        ]
-    },
-    {
-        "database": "HR",
-        "tableName": "Employees",
-        "data": [
-            {
-                "EmployeeID": 1,
-                "EmployeeName": "Alia"
-            },
-            {
-                "EmployeeID": 2,
-                "EmployeeName": "Ali"
-            },
-            {
-                "EmployeeID": 3,
-                "EmployeeName": "Ammen"
-            }
-        ]
-    },
-    {
-        "database": "Customer",
-        "tableName": "Customer",
-        "data": [
-            {
-                "CustomerID": 1112,
-                "CustomerName": "Alia"
-            },
-            {
-                "CustomerID": 4212,
-                "CustomerName": "Ali"
-            },
-            {
-                "CustomerID": 2301,
-                "CustomerName": "Ammen"
-            }
-        ]
-    },
-    {
-        "database": "Customer",
-        "tableName": "Order",
-        "data": [
-            {
-                "OrderID": 1112,
-                "OrderName": "Order 1"
-            },
-            {
-                "OrderID": 4212,
-                "OrderName": "Order 2"
-            },
-            {
-                "OrderID": 2301,
-                "OrderName": "Order 3"
-            }
-        ]
-    }
-]
+function System() {
+    const { setDateTime, setSelectedModule } = useContext(CheckContext);
 
+    const navigate = useNavigate();
 
+    const initialSystems = [
+        { name: 'Arabia', loading: false, startTime: '', endTime: '' },
+        { name: 'FundBot', loading: false, startTime: '', endTime: '' },
+        { name: 'COB', loading: false, startTime: '', endTime: '' },
+        { name: 'Helios', loading: false, startTime: '', endTime: '' },
+        { name: 'Reflect', loading: false, startTime: '', endTime: '' },
+    ];
 
------------------------------------
+    const [systems, setSystems] = useState(initialSystems);
 
-    import { useMemo, useState } from 'react';
-import {
-  MRT_EditActionButtons,
-  MaterialReactTable,
-  // createRow,
-  type MRT_ColumnDef,
-  type MRT_Row,
-  type MRT_TableOptions,
-  useMaterialReactTable,
-} from 'material-react-table';
-import {
-  Box,
-  Button,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import {
-  QueryClient,
-  QueryClientProvider,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-import { type User, fakeData, usStates } from './data';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-const Example = () => {
-  const [validationErrors, setValidationErrors] = useState<
-    Record<string, string | undefined>
-  >({});
-
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
-    () => [
-      {
-        accessorKey: 'id',
-        header: 'Id',
-        enableEditing: false,
-        size: 80,
-      },
-      {
-        accessorKey: 'firstName',
-        header: 'First Name',
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.firstName,
-          helperText: validationErrors?.firstName,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              firstName: undefined,
-            }),
-          //optionally add validation checking for onBlur or onChange
-        },
-      },
-      {
-        accessorKey: 'lastName',
-        header: 'Last Name',
-        muiEditTextFieldProps: {
-          required: true,
-          error: !!validationErrors?.lastName,
-          helperText: validationErrors?.lastName,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              lastName: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: 'email',
-        header: 'Email',
-        muiEditTextFieldProps: {
-          type: 'email',
-          required: true,
-          error: !!validationErrors?.email,
-          helperText: validationErrors?.email,
-          //remove any previous validation errors when user focuses on the input
-          onFocus: () =>
-            setValidationErrors({
-              ...validationErrors,
-              email: undefined,
-            }),
-        },
-      },
-      {
-        accessorKey: 'state',
-        header: 'State',
-        editVariant: 'select',
-        editSelectOptions: usStates,
-        muiEditTextFieldProps: {
-          select: true,
-          error: !!validationErrors?.state,
-          helperText: validationErrors?.state,
-        },
-      },
-    ],
-    [validationErrors],
-  );
-
-  //call CREATE hook
-  const { mutateAsync: createUser, isPending: isCreatingUser } =
-    useCreateUser();
-  //call READ hook
-  const {
-    data: fetchedUsers = [],
-    isError: isLoadingUsersError,
-    isFetching: isFetchingUsers,
-    isLoading: isLoadingUsers,
-  } = useGetUsers();
-  //call UPDATE hook
-  const { mutateAsync: updateUser, isPending: isUpdatingUser } =
-    useUpdateUser();
-  //call DELETE hook
-  const { mutateAsync: deleteUser, isPending: isDeletingUser } =
-    useDeleteUser();
-
-  //CREATE action
-  const handleCreateUser: MRT_TableOptions<User>['onCreatingRowSave'] = async ({
-    values,
-    table,
-  }) => {
-    const newValidationErrors = validateUser(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await createUser(values);
-    table.setCreatingRow(null); //exit creating mode
-  };
-
-  //UPDATE action
-  const handleSaveUser: MRT_TableOptions<User>['onEditingRowSave'] = async ({
-    values,
-    table,
-  }) => {
-    const newValidationErrors = validateUser(values);
-    if (Object.values(newValidationErrors).some((error) => error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await updateUser(values);
-    table.setEditingRow(null); //exit editing mode
-  };
-
-  //DELETE action
-  const openDeleteConfirmModal = (row: MRT_Row<User>) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      deleteUser(row.original.id);
-    }
-  };
-
-  const table = useMaterialReactTable({
-    columns,
-    data: fetchedUsers,
-    createDisplayMode: 'modal', //default ('row', and 'custom' are also available)
-    editDisplayMode: 'modal', //default ('row', 'cell', 'table', and 'custom' are also available)
-    enableEditing: true,
-    getRowId: (row) => row.id,
-    muiToolbarAlertBannerProps: isLoadingUsersError
-      ? {
-          color: 'error',
-          children: 'Error loading data',
-        }
-      : undefined,
-    muiTableContainerProps: {
-      sx: {
-        minHeight: '500px',
-      },
-    },
-    onCreatingRowCancel: () => setValidationErrors({}),
-    onCreatingRowSave: handleCreateUser,
-    onEditingRowCancel: () => setValidationErrors({}),
-    onEditingRowSave: handleSaveUser,
-    //optionally customize modal content
-    renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <>
-        <DialogTitle variant="h3">Create New User</DialogTitle>
-        <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
-      </>
-    ),
-    //optionally customize modal content
-    renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <>
-        <DialogTitle variant="h3">Edit User</DialogTitle>
-        <DialogContent
-          sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
-        >
-          {internalEditComponents} {/* or render custom edit components here */}
-        </DialogContent>
-        <DialogActions>
-          <MRT_EditActionButtons variant="text" table={table} row={row} />
-        </DialogActions>
-      </>
-    ),
-    renderRowActions: ({ row, table }) => (
-      <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Edit">
-          <IconButton onClick={() => table.setEditingRow(row)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    ),
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Button
-        variant="contained"
-        onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
-          //or you can pass in a row object to set default values with the `createRow` helper function
-          // table.setCreatingRow(
-          //   createRow(table, {
-          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
-          //   }),
-          // );
-        }}
-      >
-        Create New User
-      </Button>
-    ),
-    state: {
-      isLoading: isLoadingUsers,
-      isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
-      showAlertBanner: isLoadingUsersError,
-      showProgressBars: isFetchingUsers,
-    },
-  });
-
-  return <MaterialReactTable table={table} />;
-};
-
-//CREATE hook (post new user to api)
-function useCreateUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (user: User) => {
-      //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (newUserInfo: User) => {
-      queryClient.setQueryData(
-        ['users'],
-        (prevUsers: any) =>
-          [
-            ...prevUsers,
-            {
-              ...newUserInfo,
-              id: (Math.random() + 1).toString(36).substring(7),
-            },
-          ] as User[],
-      );
-    },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
-  });
-}
-
-//READ hook (get users from api)
-function useGetUsers() {
-  return useQuery<User[]>({
-    queryKey: ['users'],
-    queryFn: async () => {
-      //send api request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve(fakeData);
-    },
-    refetchOnWindowFocus: false,
-  });
-}
-
-//UPDATE hook (put user in api)
-function useUpdateUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (user: User) => {
-      //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (newUserInfo: User) => {
-      queryClient.setQueryData(['users'], (prevUsers: any) =>
-        prevUsers?.map((prevUser: User) =>
-          prevUser.id === newUserInfo.id ? newUserInfo : prevUser,
-        ),
-      );
-    },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
-  });
-}
-
-//DELETE hook (delete user in api)
-function useDeleteUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (userId: string) => {
-      //send api update request here
-      await new Promise((resolve) => setTimeout(resolve, 1000)); //fake api call
-      return Promise.resolve();
-    },
-    //client side optimistic update
-    onMutate: (userId: string) => {
-      queryClient.setQueryData(['users'], (prevUsers: any) =>
-        prevUsers?.filter((user: User) => user.id !== userId),
-      );
-    },
-    // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }), //refetch users after mutation, disabled for demo
-  });
-}
-
-const queryClient = new QueryClient();
-
-const ExampleWithProviders = () => (
-  //Put this with your other react-query providers near root of your app
-  <QueryClientProvider client={queryClient}>
-    <Example />
-  </QueryClientProvider>
-);
-
-export default ExampleWithProviders;
-
-const validateRequired = (value: string) => !!value.length;
-const validateEmail = (email: string) =>
-  !!email.length &&
-  email
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    );
-
-function validateUser(user: User) {
-  return {
-    firstName: !validateRequired(user.firstName)
-      ? 'First Name is Required'
-      : '',
-    lastName: !validateRequired(user.lastName) ? 'Last Name is Required' : '',
-    email: !validateEmail(user.email) ? 'Incorrect Email Format' : '',
-  };
-}
-
----------------------------------
-
-    import React, { useState } from 'react';
-import data from '../../Data/SchemaDB.json';
-import './FilterPanel.css';
-import { useTable } from '../CustomHook/CustomHook';
-
-interface Column {
-    columnId: number;
-    columnName: string;
-    dataType: string;
-}
-
-interface Table {
-    tableId: number;
-    tableName: string;
-    primaryKey: string;
-    description: string;
-    columns: Column[];
-}
-
-interface Database {
-    id: number;
-    name: string;
-    tables: Table[];
-}
-
-const FilterPanel = () => {
-    const [selectedDatabase, setSelectedDatabase] = useState<Database>();
-    const [disabled, setDisabled] = useState(true);
-    const [showDescription, setShowDescription] = useState(false);
-    const [disabledTable, setDisabledTable] = useState(true);
-    const { selectedTable, setSelectedTable, setFilterColumn, setShowData } = useTable();
-
-    const handleDatabaseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const databaseId = parseInt(event.target.value);
-        const database = data.find(db => db.id === databaseId);
-        setSelectedDatabase(database);
-        if (event.target.value == "NULL") {
-            setShowDescription(false);
-            setShowData(false);
-            setDisabledTable(true);
-        } else {
-            setDisabledTable(false);
-        }
+    const sortSystems = (systemsArray: typeof initialSystems) => {
+        return systemsArray.sort((a, b) => (a.loading === b.loading) ? 0 : a.loading ? -1 : 1);
     };
 
-    const handleTableChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const tableId = parseInt(event.target.value);
-        const table = selectedDatabase?.tables.find(tb => tb.tableId === tableId);
-        setSelectedTable(table);
-        if (event.target.value == "NULL") {
-            setDisabled(true);
-            setShowData(false);
-        } else {
-            setDisabled(false);
+    const ifuserCheck = (index: number) => {
+        const system = systems[index];
+        if (!system.startTime) {
+            toast.error('Please Enter Start Date Time..', {
+                position: "bottom-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: 'custom-toast',
+                transition: Bounce,
+            });
+            return;
         }
+        const newSystems = [...systems];
+        newSystems[index].loading = true;
+
+        setSystems(sortSystems(newSystems));
     };
 
-    const FilterData = () => {
-        setFilterColumn(selectedTable ? selectedTable.tableName : "");
-        setShowData(true);
-    }
+    const handleClick = (index: number) => {
+        const system = systems[index];
+        setSelectedModule(system.name);
+        setDateTime(system.startTime);
+        navigate('/DataPage');
+    };
+
+    const handleInputChange = (index: number, field: string, value: string | boolean) => {
+        const newSystems = [...systems];
+        newSystems[index][field] = value;
+        if (field === 'startTime' && typeof value === 'string') {
+            if (newSystems[index].endTime && new Date(value) >= new Date(newSystems[index].endTime)) {
+                newSystems[index].endTime = '';
+            }
+        }
+        setSystems(sortSystems(newSystems));
+    };
+
+    const handleStop = (index: number) => {
+        const newSystems = [...systems];
+        newSystems[index].loading = false;
+        newSystems[index].startTime = '';
+        newSystems[index].endTime = '';
+        setSystems(sortSystems(newSystems));
+    };
 
     return (
-        <div className='NavBar'>
-            <div className='logo'>
-                <p>middleware<br />system</p>
-            </div>
+        <div className="tableParent">
+            <ToastContainer />
+            <table className='SystemTable'>
+                <thead>
+                    <tr>
+                        <th>System</th>
+                        <th>Schedule</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {systems.map((system, index) => (
+                        <tr key={system.name}>
+                            <td className='systemName'>
+                                {system.loading && <i className="bi bi-arrow-repeat"></i>}
+                                <label>{system.name}</label>
+                            </td>
+                            <td className='dateTime'>
+                                <input
+                                    type='datetime-local'
+                                    value={system.startTime}
+                                    onChange={(e) => handleInputChange(index, 'startTime', e.target.value)}
+                                    disabled={system.loading} className={system.loading ? "disable" : ""} />
 
-            <div className='chooses'>
-                <div className='dbSelect'>
-                    <select onChange={handleDatabaseChange}>
-                        <option value="NULL">Select a database</option>
-                        {data.map(db => (
-                            <option key={db.id} value={db.id}>{db.name}</option>
-                        ))}
-                    </select>
-                    <i className="bi bi-caret-down"></i>
-                </div>
+                                <span> <i className="bi bi-arrow-right"></i> </span>
 
-                <div className='tableSelect'>
-                    <select onChange={handleTableChange} disabled={disabledTable}>
-                        <option value="NULL">Select a table</option>
-                        {selectedDatabase?.tables.map(tb => (
-                            <option key={tb.tableId} value={tb.tableId}>{tb.tableName}</option>
-                        ))}
-                    </select>
-                    <i className="bi bi-caret-down"></i>
-                </div>
-
-                <div className='description'>
-                    <button onClick={() => { setShowDescription(prev => !prev) }} className={disabled || !selectedDatabase ? "disabled" : ""}>description</button>
-                    {!disabled && showDescription && selectedDatabase && (
-                        <div className='content'>
-                            <i className="bi bi-caret-up-fill"></i>
-                            <h3>{selectedTable?.description}</h3>
-                        </div>
-                    )}
-                </div>
-
-                <div className='preview'>
-                    <button onClick={FilterData} className={disabled || !selectedDatabase ? "disabledPreview" : ""}>preview</button>
-                </div>
-            </div>
+                                <input
+                                    type='datetime-local'
+                                    value={system.endTime}
+                                    min={system.startTime}
+                                    onChange={(e) => handleInputChange(index, 'endTime', e.target.value)}
+                                    disabled={system.loading} className={system.loading ? "disable" : ""}
+                                />
+                            </td>
+                            <td className='actions'>
+                                {system.loading ? (
+                                    <div className='stop-download'>
+                                        <i className="bi bi-stop-circle" onClick={() => handleStop(index)}></i>
+                                        <i className="bi bi-file-earmark-arrow-down"></i>
+                                        <button onClick={() => handleClick(index)}>details</button>
+                                    </div>
+                                ) : (
+                                    <i className="bi bi-play-circle" onClick={() => ifuserCheck(index)}></i>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
-};
+}
 
-export default FilterPanel;
+export default System;
+
