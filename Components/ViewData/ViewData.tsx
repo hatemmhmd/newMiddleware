@@ -22,7 +22,7 @@ const DataGridComponent = () => {
   }, []);
 
   const onCellPrepared = (e) => {
-    if (e.column.dataField === 'callSchedule' && e.rowType === 'data') {
+    if (e.column.dataField === 'startTime' && e.rowType === 'data') {
       e.cellElement.classList.add('dx-editor-cell');
     }
   };
@@ -57,8 +57,8 @@ const DataGridComponent = () => {
         <Column dataField="country" caption="Country" alignment="center" />
         <Column dataField="isActive" caption="Is Active" dataType="boolean" alignment="center" />
         <Column 
-          dataField="callSchedule"
-          caption="Call Schedule" 
+          dataField="startTime"
+          caption="Start Time" 
           alignment="center"
           cellRender={renderDateBox}
         />
