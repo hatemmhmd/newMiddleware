@@ -1,11 +1,12 @@
-import './Design.css';
 import DataGrid, { Column } from 'devextreme-react/data-grid';
-import data from './Data.json'
+import 'devextreme/dist/css/dx.light.css'; // Import DevExtreme styles
+import './Design.css';
+import data from './Data.json'; // Import the JSON data
 
 const home = () => {
   const renderPlayIcon = () => (
     <div className="icon-cell">
-      <i className="dx-icon-play"></i>
+      <i className="dx-icon dx-icon-video"></i> {/* Use an available DevExtreme icon */}
     </div>
   );
 
@@ -31,9 +32,10 @@ const home = () => {
 export default home;
 
 
+
 ------------------------------- 
 
-  .data-grid-container .dx-datagrid-headers {
+.data-grid-container .dx-datagrid-headers {
     background-color: #111 !important;
     /* Change header color */
 }
@@ -53,3 +55,16 @@ export default home;
 }
 
 
+.data-grid-container .icon-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.data-grid-container .icon-cell .dx-icon {
+    font-size: 20px;
+    /* Customize icon size */
+    color: #4CAF50;
+    /* Customize icon color */
+    cursor: pointer;
+}
