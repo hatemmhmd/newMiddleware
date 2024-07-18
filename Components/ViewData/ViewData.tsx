@@ -1,45 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
+import { useEffect, useState } from 'react';
+import DataGrid, { Column } from 'devextreme-react/data-grid';
 import 'devextreme/dist/css/dx.light.css'; // Import DevExtreme styles
-import './DataGridComponent.css'; // Import custom styles
+import './Adminstration.css'; // Import custom styles
 import axios from 'axios';
 import DateBox from 'devextreme-react/date-box';
 
-const DataGridComponent = () => {
+
+const Adminstration = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://your-api-endpoint.com/data');
+        const response = await axios.get('https://localhost:7249/api/Adminstration');
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data', error);
       }
     };
-
     fetchData();
   }, []);
 
-  const onCellPrepared = (e) => {
-    if (e.column.dataField === 'startTime' && e.rowType === 'data') {
-      e.cellElement.classList.add('dx-editor-cell');
-    }
-  };
 
-  const renderDateBox = (cellInfo) => {
-    return (
-      <DateBox
-        value={cellInfo.data[cellInfo.column.dataField]}
-        type="datetime"
-        displayFormat="MM/dd/yyyy HH:mm"
-        dateSerializationFormat="yyyy-MM-ddTHH:mm:ss"
-        onValueChanged={(e) => {
-          cellInfo.setValue(e.value);
-        }}
-      />
-    );
-  };
+  const renderPlayIcon = () => (
+    <div className="icon-cell">
+      <i className="dx-icon dx-icon-video"></i>
+    </div>
+  );
+
+  const renderSpinnerIcon = () => (
+    <div className="icon-cell">
+      <i className="dx-icon dx-icon-pulldown"></i>
+    </div>
+  );
+
+
 
   return (
     <div className="data-grid-container">
@@ -47,24 +42,250 @@ const DataGridComponent = () => {
         dataSource={data}
         showBorders={true}
         rowAlternationEnabled={true}
-        height="100%"
-        onCellPrepared={onCellPrepared}
+        width={'107.5%'}
       >
-        <Editing mode="cell" allowUpdating={true} />
-        <Column dataField="systemID" caption="System ID" alignment="center" />
-        <Column dataField="pirid" caption="PIR ID" alignment="center" />
-        <Column dataField="systemName" caption="System Name" alignment="center" />
-        <Column dataField="country" caption="Country" alignment="center" />
-        <Column dataField="isActive" caption="Is Active" dataType="boolean" alignment="center" />
-        <Column 
-          dataField="startTime"
-          caption="Start Time" 
-          alignment="center"
-          cellRender={renderDateBox}
+
+        {data &&
+          < Column alignment="center" width={"3%"} cellRender={renderSpinnerIcon} />
+        }
+
+        <Column dataField="systemName" caption="System Name" alignment="center" width={"15%"} />
+        <Column dataField="country" caption="Country" alignment="center" width={"15%"} />
+
+        <Column dataField="startTime" caption="Start Date" alignment="center" width={"25%"} cellRender={({ data }) => (
+          <DateBox
+            defaultValue={data.startTime}
+            type='datetime'
+            displayFormat="MM/dd/yyyy:HH:mm"
+            dateSerializationFormat='yyyy-MM-ddHH:mm:ss'
+          />
+        )}
         />
+
+        <Column dataField="startTime" caption="End Date" alignment="center" width={"25%"} cellRender={({ data }) => (
+          <DateBox
+            defaultValue={data.endTime}
+            type='datetime'
+            displayFormat="MM/dd/yyyy HH:mm"
+            dateSerializationFormat='yyyy-MM-ddHH:mm:ss'
+          />
+        )}
+        />
+        <Column caption="Action" alignment="center" width={"10%"} cellRender={renderPlayIcon} />
       </DataGrid>
     </div>
   );
 };
 
-export default DataGridComponent;
+export default Adminstration;
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------------
+.data-grid-container {
+    margin: 30px 10px;
+}
+
+
+.data-grid-container .dx-datagrid-headers {
+    background-color: #393e46 !important;
+    color: aliceblue !important;
+}
+
+
+.dx-datagrid-headers .dx-datagrid-table .dx-row>td:hover:not(.dx-command-select):not(.dx-command-expand):not(.dx-editor-cell):not(.dx-command-edit):not(.dx-datagrid-group-space) {
+    background-color: transparent;
+    cursor: auto;
+}
+
+.dx-datagrid-headers .dx-datagrid-table .dx-row>td:hover .dx-datagrid-text-content {
+    color: #363640;
+}
+
+/* .data-grid-container .dx-header-row .dx-datagrid-text-content {
+     text-align: center;
+     padding: 15px;
+     font-weight: 500;
+     letter-spacing: 2px;
+     color: #363640;
+ } */
+
+
+
+td {
+    text-align: center;
+    position: relative;
+    font-size: 15px !important;
+    padding: 10px 5px !important;
+}
+
+.data-grid-container {
+    height: 100vh !important;
+}
+
+
+.data-grid-container .icon-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.data-grid-container .icon-cell .dx-icon-video {
+    font-size: 30px;
+    color: #4CAF50;
+    cursor: pointer;
+}
+
+
+.data-grid-container .icon-cell .dx-icon-pulldown {
+    font-size: 20px;
+    position: absolute;
+    left: 50%;
+    color: #363640;
+}
+
+----------------------
+
+import { useContext, useState } from 'react';
+import '../Systems/System.css';
+import { CheckContext } from '../CutomHook/CustomHookProvider';
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+
+function System() {
+    const { setDateTime, setSelectedModule } = useContext(CheckContext);
+
+    const navigate = useNavigate();
+
+    const initialSystems = [
+        { name: 'Arabia', loading: false, startTime: '', endTime: '' },
+        { name: 'FundBot', loading: false, startTime: '', endTime: '' },
+        { name: 'COB', loading: false, startTime: '', endTime: '' },
+        { name: 'Helios', loading: false, startTime: '', endTime: '' },
+        { name: 'Reflect', loading: false, startTime: '', endTime: '' },
+    ];
+
+    const [systems, setSystems] = useState(initialSystems);
+
+    const sortSystems = (systemsArray: typeof initialSystems) => {
+        return systemsArray.sort((a, b) => (a.loading === b.loading) ? 0 : a.loading ? -1 : 1);
+    };
+
+    const ifuserCheck = (index: number) => {
+        const system = systems[index];
+        if (!system.startTime) {
+            toast.error('Please Enter Start Date Time..', {
+                position: "bottom-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                className: 'custom-toast',
+                transition: Bounce,
+            });
+            return;
+        }
+        const newSystems = [...systems];
+        newSystems[index].loading = true;
+
+        setSystems(sortSystems(newSystems));
+    };
+
+    const handleClick = (index: number) => {
+        const system = systems[index];
+        setSelectedModule(system.name);
+        setDateTime(system.startTime);
+        navigate('/DataPage');
+    };
+
+    const handleInputChange = (index: number, field: string, value: string | boolean) => {
+        const newSystems = [...systems];
+        newSystems[index][field] = value;
+        if (field === 'startTime' && typeof value === 'string') {
+            if (newSystems[index].endTime && new Date(value) >= new Date(newSystems[index].endTime)) {
+                newSystems[index].endTime = '';
+            }
+        }
+        setSystems(sortSystems(newSystems));
+    };
+
+    const handleStop = (index: number) => {
+        const newSystems = [...systems];
+        newSystems[index].loading = false;
+        newSystems[index].startTime = '';
+        newSystems[index].endTime = '';
+        setSystems(sortSystems(newSystems));
+    };
+
+    return (
+        <div className="tableParent">
+            <ToastContainer />
+            <table className='SystemTable'>
+                <thead>
+                    <tr>
+                        <th>System</th>
+                        <th>Schedule</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {systems.map((system, index) => (
+                        <tr key={system.name}>
+                            <td className='systemName'>
+                                {system.loading && <i className="bi bi-arrow-repeat"></i>}
+                                <label>{system.name}</label>
+                            </td>
+                            <td className='dateTime'>
+                                <input
+                                    type='datetime-local'
+                                    value={system.startTime}
+                                    onChange={(e) => handleInputChange(index, 'startTime', e.target.value)}
+                                    disabled={system.loading} className={system.loading ? "disable" : ""} />
+
+                                <span> <i className="bi bi-arrow-right"></i> </span>
+
+                                <input
+                                    type='datetime-local'
+                                    value={system.endTime}
+                                    min={system.startTime}
+                                    onChange={(e) => handleInputChange(index, 'endTime', e.target.value)}
+                                    disabled={system.loading} className={system.loading ? "disable" : ""}
+                                />
+                            </td>
+                            <td className='actions'>
+                                {system.loading ? (
+                                    <div className='stop-download'>
+                                        <i className="bi bi-stop-circle" onClick={() => handleStop(index)}></i>
+                                        <i className="bi bi-file-earmark-arrow-down"></i>
+                                        <button onClick={() => handleClick(index)}>details</button>
+                                    </div>
+                                ) : (
+                                    <i className="bi bi-play-circle" onClick={() => ifuserCheck(index)}></i>
+                                )}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export default System;
+
+
+
+  
+  
