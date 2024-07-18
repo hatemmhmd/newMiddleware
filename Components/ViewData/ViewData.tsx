@@ -1,71 +1,53 @@
-using Microsoft.AspNetCore.Mvc;
- 
-namespace PIR.API.Controllers
-{
- 
-    public class AdminstartionDTO
-    {
-        public int SystemID { get; set; }
-        public int PIRID { get; set; }
-        public string? SystemName { get; set; }
-		public DateTime StartTime { get; set; } 
-		public DateTime EndTime { get; set; }   
-		public string? Country { get; set; }
-        public bool IsActive { get; set; }
-    }
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AdminstrationController : ControllerBase
-    {
-        [HttpGet]
-        public ActionResult<List<AdminstartionDTO>> GetSystemInfo()
-        {
-            List<AdminstartionDTO> systemInfoList = new List<AdminstartionDTO>
-            {
-                new AdminstartionDTO {
-                    SystemID = 1,
-                    PIRID = 1,
-                    SystemName = "Reflect",
-                    Country = "Jordan",
-					StartTime = new DateTime(2024, 7, 18, 8, 0, 0),
-					EndTime = new DateTime(2024, 7, 18, 17, 0, 0), 
-                    IsActive = true 
-                },
-                new AdminstartionDTO { SystemID = 1,
-                    PIRID = 1,
-                    SystemName = "Reflect",
-                    Country = "Jordan",
-					StartTime = new DateTime(2024, 7, 18, 8, 0, 0),
-					EndTime = new DateTime(2024, 7, 18, 17, 0, 0), 
-                    IsActive = true
-                },
-                new AdminstartionDTO {SystemID = 1,
-                    PIRID = 1,
-                    SystemName = "Reflect",
-                    Country = "Jordan",
-					StartTime = new DateTime(2024, 7, 18, 8, 0, 0),
-					EndTime = new DateTime(2024, 7, 18, 17, 0, 0), 
-                    IsActive = true 
-                },
-                new AdminstartionDTO {SystemID = 1,
-                    PIRID = 1,
-                    SystemName = "Reflect",
-                    Country = "Jordan",
-					StartTime = new DateTime(2024, 7, 18, 8, 0, 0),
-					EndTime = new DateTime(2024, 7, 18, 17, 0, 0), 
-                    IsActive = false 
-                },
-                new AdminstartionDTO { SystemID = 1,
-                    PIRID = 1,
-                    SystemName = "Reflect",
-                    Country = "Jordan",
-					StartTime = new DateTime(2024, 7, 18, 8, 0, 0),
-					EndTime = new DateTime(2024, 7, 18, 17, 0, 0), 
-                    IsActive = false
-                }
-            };
- 
-            return Ok(systemInfoList);
-        }
-    }
-}
+import React, { useEffect, useState } from 'react';
+import DataGrid, { Column } from 'devextreme-react/data-grid';
+import 'devextreme/dist/css/dx.light.css'; // Import DevExtreme styles
+import './DataGridComponent.css'; // Import custom styles
+import axios from 'axios';
+import { DateBox } from 'devextreme-react/date-box';
+
+const DataGridComponent = () => {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://your-api-endpoint.com/data');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <div className="data-grid-container">
+      <DataGrid
+        dataSource={data}
+        showBorders={true}
+        rowAlternationEnabled={true}
+        height="100%"
+      >
+        <Column dataField="systemID" caption="System ID" alignment="center" />
+        <Column dataField="pirid" caption="PIR ID" alignment="center" />
+        <Column dataField="systemName" caption="System Name" alignment="center" />
+        <Column dataField="country" caption="Country" alignment="center" />
+        <Column dataField="isActive" caption="Is Active" dataType="boolean" alignment="center" />
+        <Column 
+          caption="Call Schedule" 
+          alignment="center" 
+          editCellRender={cellData => (
+            <DateBox 
+              type="datetime" 
+              defaultValue={cellData.value}
+              onValueChanged={(e) => cellData.setValue(e.value)}
+            />
+          )}
+        />
+      </DataGrid>
+    </div>
+  );
+};
+
+export default DataGridComponent;
