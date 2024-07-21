@@ -156,7 +156,65 @@ const GridTable: React.FC = () => {
 
 export default GridTable;
 
+-----------------------------------------
 
+
+   new AdminstartionDTO {
+                    //NO Active PIR Currently
+                    //Edit buttn is showing by checking  if(not isrunning) then show Edit
+                    //creat PIR // FE ==> CreatePIR(SytemId, Start, End)
+
+                    SystemID = 1,
+                    PIRID = null,
+                    SystemName = "Arabia",
+                    Country = "Jordan, Palastine",
+                    StartTime = null,
+                    EndTime = null,
+                    IsRunning = false
+                },
+                new AdminstartionDTO { 
+                    //Scheduled future PIR
+                   //Edit buttn is showing by checking  if(not isrunning) then show Edit to reschedule
+                   //Update PIR // FE ==> UpdatePIR(systemID,PIRId, Start, End)
+
+                    SystemID = 2,
+                    PIRID = 2,
+                    SystemName = "FundBot",
+                    Country = "Jordan",
+                    StartTime = new DateTime(2024,07,23),
+                    EndTime = new DateTime(2024,07,24,5,15,0),
+                    IsRunning = false
+                },
+                new AdminstartionDTO {
+                    //a running PIR then show the action (if isrunning --> show, spinner, PIR ID, Stop, download, details)
+                    SystemID = 3,
+                    PIRID = 3,
+                    SystemName = "COB",
+                    Country = "Jordan, Morocco",
+                    StartTime =  new DateTime(2024,07,20),
+                    EndTime =  new DateTime(2024,07,22),
+                    IsRunning = true
+                },
+                new AdminstartionDTO {
+                    //creat PIR // FE ==> ADDPIR
+                    SystemID = 4,
+                    PIRID = null,
+                    SystemName = "Helios",
+                    Country = "Jordan",
+                    StartTime = null,
+                    EndTime = null,
+                    IsRunning = false
+                },
+                new AdminstartionDTO { 
+                    SystemID = 5,
+                    PIRID = 5,
+                    SystemName = "Reflect",
+                    Country = "Jordan",
+                    StartTime = new DateTime(2024,07,23),
+                    EndTime = new DateTime(2024,07,24),
+                    IsRunning = false
+                }
+            };
 
 
 
