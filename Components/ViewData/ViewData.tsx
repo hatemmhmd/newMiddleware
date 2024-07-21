@@ -27,6 +27,7 @@ const GridTable: React.FC = () => {
   const navigate = useNavigate();
   const [systems, setSystems] = useState<System[]>([]);
   const [activeModule, setActiveModule] = useState<string | null>(localStorage.getItem('selectedModule'));
+  const [isEditing, setIsEditing] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,25 +59,6 @@ const GridTable: React.FC = () => {
       setActiveModule(savedModule);
     }
   }, [setSelectedModule]);
-
-  const onPlayClick = (cellData: any) => {
-    const { data } = cellData;
-    if (!data.startTime || !data.endTime) {
-      notify('Please enter start and end date', 'warning', 2000);
-    } else {
-      const updatedSystems = systems.map(system => {
-        if (system.systemID === data.systemID) {
-          return { ...system, isRunning: true };
-        }
-        return system;
-      });
-
-      setSystems(updatedSystems);
-      localStorage.setItem('selectedModule', data.systemName);
-      setActiveModule(data.systemName);
-      setDateTime(data.startTime);
-    }
-  };
 
   const onStopClick = (systemID: number) => {
     const updatedSystems = systems.map(system => {
@@ -126,36 +108,19 @@ const GridTable: React.FC = () => {
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : null}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
         onValueChanged={(e) => handleDateChange(index, dateField, e.value)}
-        disabled={cellData.data.isRunning || (dateField === 'endTime' && !cellData.data.startTime)}
+        disabled={cellData.data.isRunning || !isEditing[cellData.data.systemID]}
         displayFormat="yyyy-MM-ddTHH:mm" // Set the correct format for datetime
       />
     );
   };
 
   const editCellRender = (cellData: any) => {
-    const today = new Date();
-    const startTime = cellData.data.startTime ? new Date(cellData.data.startTime) : null;
-
-    if (cellData.data.isRunning) {
-      return (
-        <div>
-          <Button
-            icon="clear"
-            onClick={() => onStopClick(cellData.data.systemID)}
-          />
-          <Button icon='download' />
-          <Button text="Details" />
-        </div>
-      );
-    } else if (startTime && startTime > today) {
-      return (
-        <Button
-          icon="edit"
-          onClick={() => onPlayClick(cellData)}
-        />
-      );
-    }
-    return null;
+    return (
+      <Button
+        icon="edit"
+        onClick={() => setIsEditing({ ...isEditing, [cellData.data.systemID]: !isEditing[cellData.data.systemID] })}
+      />
+    );
   };
 
   const statusCellRender = (cellData: any) => {
