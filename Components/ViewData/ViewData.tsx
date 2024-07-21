@@ -1,89 +1,61 @@
-import { useEffect, useState } from 'react';
-import DataGrid, { Column } from 'devextreme-react/data-grid';
-import 'devextreme/dist/css/dx.light.css'; // Import DevExtreme styles
-import './Adminstration.css'; // Import custom styles
-import axios from 'axios';
-import DateBox from 'devextreme-react/date-box';
+List<AdminstartionDTO> systemInfoList = new List<AdminstartionDTO>
+            {
+                new AdminstartionDTO {
+                    //NO Active PIR Currently
+                    //Edit buttn is showing by checking  if(not isrunning) then show Edit
+                    //creat PIR // FE ==> CreatePIR(SytemId, Start, End)
 
+                    SystemID = 1,
+                    PIRID = null,
+                    SystemName = "Arabia",
+                    Country = "Jordan, Palastine",
+                    StartTime = null,
+                    EndTime = null,
+                    IsRunning = false
+                },
+                new AdminstartionDTO { 
+                    //Scheduled future PIR
+                   //Edit buttn is showing by checking  if(not isrunning) then show Edit to reschedule
+                   //Update PIR // FE ==> UpdatePIR(systemID,PIRId, Start, End)
 
-const Adminstration = () => {
-  const [data, setData] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('https://localhost:7249/api/Adminstration');
-        setData(response.data);
-      } catch (error) {
-        console.error('Error fetching data', error);
-      }
-    };
-    fetchData();
-  }, []);
-
-
-  const renderPlayIcon = () => (
-    <div className="icon-cell">
-      <i className="dx-icon dx-icon-video"></i>
-    </div>
-  );
-
-  const renderSpinnerIcon = () => (
-    <div className="icon-cell">
-      <i className="dx-icon dx-icon-pulldown"></i>
-    </div>
-  );
-
-
-
-  return (
-    <div className="data-grid-container">
-      <DataGrid
-        dataSource={data}
-        showBorders={true}
-        rowAlternationEnabled={true}
-        width={'107.5%'}
-      >
-
-        {data &&
-          < Column alignment="center" width={"3%"} cellRender={renderSpinnerIcon} />
-        }
-
-        <Column dataField="systemName" caption="System Name" alignment="center" width={"15%"} />
-        <Column dataField="country" caption="Country" alignment="center" width={"15%"} />
-
-        <Column dataField="startTime" caption="Start Date" alignment="center" width={"25%"} cellRender={({ data }) => (
-          <DateBox
-            defaultValue={data.startTime}
-            type='datetime'
-            displayFormat="MM/dd/yyyy:HH:mm"
-            dateSerializationFormat='yyyy-MM-ddHH:mm:ss'
-          />
-        )}
-        />
-
-        <Column dataField="startTime" caption="End Date" alignment="center" width={"25%"} cellRender={({ data }) => (
-          <DateBox
-            defaultValue={data.endTime}
-            type='datetime'
-            displayFormat="MM/dd/yyyy HH:mm"
-            dateSerializationFormat='yyyy-MM-ddHH:mm:ss'
-          />
-        )}
-        />
-        <Column caption="Action" alignment="center" width={"10%"} cellRender={renderPlayIcon} />
-      </DataGrid>
-    </div>
-  );
-};
-
-export default Adminstration;
-
-
-
-
-
-
+                    SystemID = 2,
+                    PIRID = 2,
+                    SystemName = "FundBot",
+                    Country = "Jordan",
+                    StartTime = new DateTime(2024,07,23),
+                    EndTime = new DateTime(2024,07,24,5,15,0),
+                    IsRunning = false
+                },
+                new AdminstartionDTO {
+                    //a running PIR then show the action (if isrunning --> show, spinner, PIR ID, Stop, download, details)
+                    SystemID = 3,
+                    PIRID = 3,
+                    SystemName = "COB",
+                    Country = "Jordan, Morocco",
+                    StartTime =  new DateTime(2024,07,20),
+                    EndTime =  new DateTime(2024,07,22),
+                    IsRunning = true
+                },
+                new AdminstartionDTO {
+                    //creat PIR // FE ==> ADDPIR
+                    SystemID = 4,
+                    PIRID = null,
+                    SystemName = "Helios",
+                    Country = "Jordan",
+                    StartTime = null,
+                    EndTime = null,
+                    IsRunning = false
+                },
+                new AdminstartionDTO { 
+                    SystemID = 5,
+                    PIRID = 5,
+                    SystemName = "Reflect",
+                    Country = "Jordan",
+                    StartTime = new DateTime(2024,07,23),
+                    EndTime = new DateTime(2024,07,24),
+                    IsRunning = false
+                }
+            };
 
 
 
