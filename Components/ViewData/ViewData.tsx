@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
@@ -7,7 +7,7 @@ import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import { useNavigate } from 'react-router-dom';
 import notify from 'devextreme/ui/notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faEdit, faStop, faDownload, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faEdit, faStop, faDownload, faInfoCircle, faClear } from '@fortawesome/free-solid-svg-icons';
 import './Design.css';
 
 interface System {
@@ -27,7 +27,6 @@ const GridTable: React.FC = () => {
   const navigate = useNavigate();
   const [systems, setSystems] = useState<System[]>([]);
   const [activeModule, setActiveModule] = useState<string | null>(localStorage.getItem('selectedModule'));
-  const [isEditing, setIsEditing] = useState<{ [key: number]: boolean }>({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,27 +98,27 @@ const GridTable: React.FC = () => {
   };
 
   const dateCellRender = (cellData: any, dateField: SystemField) => {
-    const index = systems.findIndex(system => system.systemID === cellData.data.systemID);
     const today = new Date();
-
     return (
       <DateBox
         type="datetime"
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : null}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
-        onValueChanged={(e) => handleDateChange(index, dateField, e.value)}
-        disabled={cellData.data.isRunning || !isEditing[cellData.data.systemID]}
-        displayFormat="yyyy-MM-ddTHH:mm" // Set the correct format for datetime
+        onValueChanged={(e) => handleDateChange(cellData.rowIndex, dateField, e.value)}
+        displayFormat="yyyy-MM-ddTHH:mm"
       />
     );
   };
 
-  const editCellRender = (cellData: any) => {
-    return (
-      <Button
-        icon="edit"
-        onClick={() => setIsEditing({ ...isEditing, [cellData.data.systemID]: !isEditing[cellData.data.systemID] })}
-      />
+  const actionCellRender = (cellData: any) => {
+    return cellData.data.isRunning ? (
+      <div>
+        <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
+        <Button icon="download" />
+        <Button icon="info" />
+      </div>
+    ) : (
+      <Button icon="edit" />
     );
   };
 
@@ -143,43 +142,20 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-
-      <Column
-        width={"4%"}
-        caption=""
-        cellRender={statusCellRender}
-      />
-
-      <Column
-        dataField="systemName"
-        caption="System"
-        cellRender={systemNameCellRender}
-        width={"9%"}
-      />
+      <Editing mode="cell" allowUpdating={true} />
+      
+      <Column width={"4%"} caption="" cellRender={statusCellRender} />
+      <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"9%"} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"9%"} />
-      <Column
-        width={"28%"}
-        dataField="startTime"
-        caption="Start Date"
-        cellRender={(cellData) => dateCellRender(cellData, 'startTime')}
-      />
-      <Column
-        width={"28%"}
-        dataField="endTime"
-        caption="End Date"
-        cellRender={(cellData) => dateCellRender(cellData, 'endTime')}
-      />
-
-      <Column
-        caption="Edit"
-        cellRender={editCellRender}
-      />
-
+      <Column width={"28%"} dataField="startTime" caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
+      <Column width={"28%"} dataField="endTime" caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+      <Column caption="Action" cellRender={actionCellRender} />
     </DataGrid>
   );
 };
 
 export default GridTable;
+
 
 
 
