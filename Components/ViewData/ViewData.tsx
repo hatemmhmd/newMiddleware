@@ -7,8 +7,8 @@ import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import { useNavigate } from 'react-router-dom';
 import notify from 'devextreme/ui/notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faEdit, faStop, faDownload, faInfoCircle, faClear } from '@fortawesome/free-solid-svg-icons';
-import './Design.css';
+import { faSpinner, faEdit, faStop, faDownload, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import './Adminstration.css';
 
 interface System {
   systemID: number;
@@ -31,7 +31,7 @@ const GridTable: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/SystemInfo'); // Adjust URL as needed
+        const response = await fetch('https://localhost:7249/api/Adminstration'); // Adjust URL as needed
         const data: System[] = await response.json();
 
         const today = new Date();
@@ -102,10 +102,10 @@ const GridTable: React.FC = () => {
     return (
       <DateBox
         type="datetime"
-        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : null}
+        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
         onValueChanged={(e) => handleDateChange(cellData.rowIndex, dateField, e.value)}
-        displayFormat="yyyy-MM-ddTHH:mm"
+        displayFormat="yyyy-MM-dd - HH:mm"
       />
     );
   };
@@ -117,9 +117,7 @@ const GridTable: React.FC = () => {
         <Button icon="download" />
         <Button icon="info" />
       </div>
-    ) : (
-      <Button icon="edit" />
-    );
+    ) : <></>
   };
 
   const statusCellRender = (cellData: any) => {
@@ -130,7 +128,7 @@ const GridTable: React.FC = () => {
     return (
       <div>
         {cellData.data.systemName}
-        {cellData.data.isRunning && <FontAwesomeIcon icon={faSpinner} spin style={{ marginLeft: '5px' }} />}
+        {cellData.data.isRunning && <FontAwesomeIcon icon={faSpinner} spin className='spinner' />}
       </div>
     );
   };
@@ -142,13 +140,12 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-      <Editing mode="cell" allowUpdating={true} />
-      
-      <Column width={"4%"} caption="" cellRender={statusCellRender} />
-      <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"9%"} />
+      <Editing mode="row" allowUpdating={true} />
+
+      <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"9%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"9%"} />
-      <Column width={"28%"} dataField="startTime" caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
-      <Column width={"28%"} dataField="endTime" caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+      <Column width={"28%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
+      <Column width={"28%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
       <Column caption="Action" cellRender={actionCellRender} />
     </DataGrid>
   );
