@@ -7,7 +7,7 @@ import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import { useNavigate } from 'react-router-dom';
 import notify from 'devextreme/ui/notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faEdit, faStop, faDownload, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import './Design.css';
 
 interface System {
@@ -33,7 +33,16 @@ const GridTable: React.FC = () => {
       try {
         const response = await fetch('http://localhost:5000/api/SystemInfo'); // Adjust URL as needed
         const data: System[] = await response.json();
-        setSystems(data);
+
+        const today = new Date();
+        const updatedData = data.map(system => {
+          if (system.startTime && new Date(system.startTime) <= today && (!system.endTime || new Date(system.endTime) >= today)) {
+            system.isRunning = true;
+          }
+          return system;
+        });
+
+        setSystems(updatedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -123,22 +132,30 @@ const GridTable: React.FC = () => {
     );
   };
 
-  const actionCellRender = (cellData: any) => {
-    return cellData.data.isRunning ? (
-      <div>
+  const editCellRender = (cellData: any) => {
+    const today = new Date();
+    const startTime = cellData.data.startTime ? new Date(cellData.data.startTime) : null;
+
+    if (cellData.data.isRunning) {
+      return (
+        <div>
+          <Button
+            icon="clear"
+            onClick={() => onStopClick(cellData.data.systemID)}
+          />
+          <Button icon='download' />
+          <Button text="Details" />
+        </div>
+      );
+    } else if (startTime && startTime > today) {
+      return (
         <Button
-          icon="clear"
-          onClick={() => onStopClick(cellData.data.systemID)}
+          icon="edit"
+          onClick={() => onPlayClick(cellData)}
         />
-        <Button icon='download' />
-        <Button text="Details" />
-      </div>
-    ) : (
-      <Button
-        icon="video"
-        onClick={() => onPlayClick(cellData)}
-      />
-    );
+      );
+    }
+    return null;
   };
 
   const statusCellRender = (cellData: any) => {
@@ -189,8 +206,8 @@ const GridTable: React.FC = () => {
       />
 
       <Column
-        caption="Action"
-        cellRender={actionCellRender}
+        caption="Edit"
+        cellRender={editCellRender}
       />
 
     </DataGrid>
@@ -198,67 +215,6 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
-
-------
-
-List<AdminstartionDTO> systemInfoList = new List<AdminstartionDTO>
-            {
-                new AdminstartionDTO {
-                    //NO Active PIR Currently
-                    //Edit buttn is showing by checking  if(not isrunning) then show Edit
-                    //creat PIR // FE ==> CreatePIR(SytemId, Start, End)
-
-                    SystemID = 1,
-                    PIRID = null,
-                    SystemName = "Arabia",
-                    Country = "Jordan, Palastine",
-                    StartTime = null,
-                    EndTime = null,
-                    IsRunning = false
-                },
-                new AdminstartionDTO { 
-                    //Scheduled future PIR
-                   //Edit buttn is showing by checking  if(not isrunning) then show Edit to reschedule
-                   //Update PIR // FE ==> UpdatePIR(systemID,PIRId, Start, End)
-
-                    SystemID = 2,
-                    PIRID = 2,
-                    SystemName = "FundBot",
-                    Country = "Jordan",
-                    StartTime = new DateTime(2024,07,23),
-                    EndTime = new DateTime(2024,07,24,5,15,0),
-                    IsRunning = false
-                },
-                new AdminstartionDTO {
-                    //a running PIR then show the action (if isrunning --> show, spinner, PIR ID, Stop, download, details)
-                    SystemID = 3,
-                    PIRID = 3,
-                    SystemName = "COB",
-                    Country = "Jordan, Morocco",
-                    StartTime =  new DateTime(2024,07,20),
-                    EndTime =  new DateTime(2024,07,22),
-                    IsRunning = true
-                },
-                new AdminstartionDTO {
-                    //creat PIR // FE ==> ADDPIR
-                    SystemID = 4,
-                    PIRID = null,
-                    SystemName = "Helios",
-                    Country = "Jordan",
-                    StartTime = null,
-                    EndTime = null,
-                    IsRunning = false
-                },
-                new AdminstartionDTO { 
-                    SystemID = 5,
-                    PIRID = 5,
-                    SystemName = "Reflect",
-                    Country = "Jordan",
-                    StartTime = new DateTime(2024,07,23),
-                    EndTime = new DateTime(2024,07,24),
-                    IsRunning = false
-                }
-            };
 
 
 
