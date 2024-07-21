@@ -1,3 +1,206 @@
+import React, { useContext, useEffect, useState } from 'react';
+import DataGrid, { Column } from 'devextreme-react/data-grid';
+import DateBox from 'devextreme-react/date-box';
+import { Button } from 'devextreme-react/button';
+import 'devextreme/dist/css/dx.light.css';
+import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
+import { useNavigate } from 'react-router-dom';
+import notify from 'devextreme/ui/notify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import './Design.css';
+
+interface System {
+  systemID: number;
+  pirid: number | null;
+  systemName: string;
+  country: string;
+  startTime: string | null;
+  endTime: string | null;
+  isRunning: boolean;
+}
+
+type SystemField = keyof System;
+
+const GridTable: React.FC = () => {
+  const { setDateTime, setSelectedModule } = useContext(CheckContext);
+  const navigate = useNavigate();
+  const [systems, setSystems] = useState<System[]>([]);
+  const [activeModule, setActiveModule] = useState<string | null>(localStorage.getItem('selectedModule'));
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/SystemInfo'); // Adjust URL as needed
+        const data: System[] = await response.json();
+        setSystems(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const savedModule = localStorage.getItem('selectedModule');
+    if (savedModule) {
+      setSelectedModule(savedModule);
+      setActiveModule(savedModule);
+    }
+  }, [setSelectedModule]);
+
+  const onPlayClick = (cellData: any) => {
+    const { data } = cellData;
+    if (!data.startTime || !data.endTime) {
+      notify('Please enter start and end date', 'warning', 2000);
+    } else {
+      const updatedSystems = systems.map(system => {
+        if (system.systemID === data.systemID) {
+          return { ...system, isRunning: true };
+        }
+        return system;
+      });
+
+      setSystems(updatedSystems);
+      localStorage.setItem('selectedModule', data.systemName);
+      setActiveModule(data.systemName);
+      setDateTime(data.startTime);
+    }
+  };
+
+  const onStopClick = (systemID: number) => {
+    const updatedSystems = systems.map(system => {
+      if (system.systemID === systemID) {
+        return { ...system, isRunning: false };
+      }
+      return system;
+    });
+
+    setSystems(updatedSystems);
+  };
+
+  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
+    const today = new Date();
+    const newSystems = [...systems];
+    const system = newSystems[index];
+
+    if (field === 'startTime') {
+      if (value && value < today) {
+        notify('Start date cannot be in the past', 'warning', 2000);
+        return;
+      }
+      system[field] = value ? value.toISOString() : null;
+    } else if (field === 'endTime') {
+      if (!system.startTime) {
+        notify('Please select a start date first', 'warning', 2000);
+        return;
+      }
+      if (value && new Date(value) <= new Date(system.startTime)) {
+        notify('End date must be greater than start date', 'warning', 2000);
+        return;
+      }
+      system[field] = value ? value.toISOString() : null;
+    }
+
+    newSystems[index] = system;
+    setSystems(newSystems);
+  };
+
+  const dateCellRender = (cellData: any, dateField: SystemField) => {
+    const index = systems.findIndex(system => system.systemID === cellData.data.systemID);
+    const today = new Date();
+
+    return (
+      <DateBox
+        type="datetime"
+        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : null}
+        min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
+        onValueChanged={(e) => handleDateChange(index, dateField, e.value)}
+        disabled={cellData.data.isRunning || (dateField === 'endTime' && !cellData.data.startTime)}
+        displayFormat="yyyy-MM-ddTHH:mm" // Set the correct format for datetime
+      />
+    );
+  };
+
+  const actionCellRender = (cellData: any) => {
+    return cellData.data.isRunning ? (
+      <div>
+        <Button
+          icon="clear"
+          onClick={() => onStopClick(cellData.data.systemID)}
+        />
+        <Button icon='download' />
+        <Button text="Details" />
+      </div>
+    ) : (
+      <Button
+        icon="video"
+        onClick={() => onPlayClick(cellData)}
+      />
+    );
+  };
+
+  const statusCellRender = (cellData: any) => {
+    return cellData.data.isRunning ? <FontAwesomeIcon icon={faSpinner} spin /> : null;
+  };
+
+  const systemNameCellRender = (cellData: any) => {
+    return (
+      <div>
+        {cellData.data.systemName}
+        {cellData.data.isRunning && <FontAwesomeIcon icon={faSpinner} spin style={{ marginLeft: '5px' }} />}
+      </div>
+    );
+  };
+
+  return (
+    <DataGrid
+      dataSource={systems}
+      showBorders={true}
+      columnAutoWidth={true}
+      rowAlternationEnabled={true}
+    >
+
+      <Column
+        width={"4%"}
+        caption=""
+        cellRender={statusCellRender}
+      />
+
+      <Column
+        dataField="systemName"
+        caption="System"
+        cellRender={systemNameCellRender}
+        width={"9%"}
+      />
+      <Column dataField="country" caption="Country" allowEditing={false} width={"9%"} />
+      <Column
+        width={"28%"}
+        dataField="startTime"
+        caption="Start Date"
+        cellRender={(cellData) => dateCellRender(cellData, 'startTime')}
+      />
+      <Column
+        width={"28%"}
+        dataField="endTime"
+        caption="End Date"
+        cellRender={(cellData) => dateCellRender(cellData, 'endTime')}
+      />
+
+      <Column
+        caption="Action"
+        cellRender={actionCellRender}
+      />
+
+    </DataGrid>
+  );
+};
+
+export default GridTable;
+
+------
+
 List<AdminstartionDTO> systemInfoList = new List<AdminstartionDTO>
             {
                 new AdminstartionDTO {
