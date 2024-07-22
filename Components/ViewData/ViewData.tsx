@@ -1,4 +1,4 @@
-uuu
+lll
 
 
 import React, { useContext, useEffect, useState } from 'react';
@@ -194,17 +194,19 @@ const GridTable: React.FC = () => {
         width={300}
         height={200}
       >
-        <p>Are you sure?</p>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
-          <Button
-            text="Confirm"
-            type="default"
-            onClick={handleConfirm}
-          />
-          <Button
-            text="Cancel"
-            onClick={handleCancel}
-          />
+        <div>
+          <p>Are you sure?</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
+            <Button
+              text="Confirm"
+              type="default"
+              onClick={handleConfirm}
+            />
+            <Button
+              text="Cancel"
+              onClick={handleCancel}
+            />
+          </div>
         </div>
       </Popup>
     </>
@@ -212,9 +214,6 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
-
-
-
 
 
 
