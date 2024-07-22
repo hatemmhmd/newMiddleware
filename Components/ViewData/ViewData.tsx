@@ -1,7 +1,9 @@
+ oo
+
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
-import TagBox from 'devextreme-react/tag-box';
+import DataGrid, { Column, Editing, Popup, Form, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
+import TagBox from 'devextreme-react/tag-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
 import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
@@ -99,8 +101,10 @@ const GridTable: React.FC = () => {
 
   const dateCellRender = (cellData: any, dateField: SystemField) => {
     const today = new Date();
+    const isEditing = cellData.column.command === "edit";
     return (
       <DateBox
+        readOnly={!isEditing}
         type="datetime"
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
@@ -151,7 +155,15 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-      <Editing mode="row" allowUpdating={true} />
+      <Editing mode="popup" allowUpdating={true} useIcons={true}>
+        <Popup title="Edit System" showTitle={true} width={700} height={525} />
+        <Form>
+          <Item dataField="systemName" />
+          <Item dataField="country" />
+          <Item dataField="startTime" />
+          <Item dataField="endTime" />
+        </Form>
+      </Editing>
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
       <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
