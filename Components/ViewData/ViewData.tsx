@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Popup, Form, Button as GridButton, Item } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import TagBox from 'devextreme-react/tag-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
 import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
-import { useNavigate } from 'react-router-dom';
 import notify from 'devextreme/ui/notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -70,7 +69,7 @@ const GridTable: React.FC = () => {
     setSystems(updatedSystems);
   };
 
-  const validateDateChange = (index: number, field: SystemField, value: Date | null) => {
+  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
     const today = new Date();
     const newSystems = [...systems];
     const system = newSystems[index];
@@ -78,40 +77,51 @@ const GridTable: React.FC = () => {
     if (field === 'startTime') {
       if (value && value < today) {
         notify('Start date cannot be in the past', 'warning', 2000);
-        return false;
+        return;
       }
+      system[field] = value ? value.toISOString() : null;
     } else if (field === 'endTime') {
       if (!system.startTime) {
         notify('Please select a start date first', 'warning', 2000);
-        return false;
+        return;
       }
-      if (value && value <= new Date(system.startTime)) {
+      if (value && new Date(value) <= new Date(system.startTime)) {
         notify('End date must be greater than start date', 'warning', 2000);
-        return false;
+        return;
       }
+
+      else {
+        console.log('AAAAAA')
+      }
+      system[field] = value ? value.toISOString() : null;
     }
 
-    system[field] = value ? value.toISOString() : null;
     newSystems[index] = system;
     setSystems(newSystems);
-    return true;
   };
 
-  const dateEditorRender = (cellData: any, dateField: SystemField) => {
+  const dateCellRender = (cellData: any, dateField: SystemField) => {
     const today = new Date();
     return (
       <DateBox
+        readOnly={true}
         type="datetime"
-        value={cellData.value ? new Date(cellData.value) : undefined}
-        min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
+        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
+        min={today}
         onValueChanged={(e) => {
           const value = e.value;
-          const isValid = validateDateChange(cellData.rowIndex, dateField, value);
-          if (!isValid) {
-            cellData.setValue(undefined);
-          } else {
-            cellData.setValue(value ? value.toISOString() : null);
+          if (dateField === 'startTime' && value && value < today) {
+            notify('Start date cannot be in the past', 'warning', 2000);
+            return;
           }
+          if (dateField === 'endTime' && (!cellData.data.startTime || value && new Date(value) <= new Date(cellData.data.startTime))) {
+            notify('End date must be greater than start date', 'warning', 2000);
+            return;
+          }
+          else {
+            console.log('0000000000000000000')
+          }
+          handleDateChange(cellData.rowIndex, dateField, value);
         }}
         displayFormat="dd-MM-yyyy HH:mm"
       />
@@ -148,27 +158,12 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-      <Editing
-        mode="row"
-        allowUpdating={true}
-        confirmDelete={false}
-      />
+
+      <Editing mode="row" allowUpdating={true} useIcons={true}></Editing>
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
-      <Column
-        width={"25%"}
-        dataField="startTime"
-        dataType='datetime'
-        caption="Start Date"
-        cellRender={(cellData) => dateEditorRender(cellData, 'startTime')}
-      />
-      <Column
-        width={"25%"}
-        dataField="endTime"
-        dataType='datetime'
-        caption="End Date"
-        cellRender={(cellData) => dateEditorRender(cellData, 'endTime')}
-      />
+      <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
+      <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
       <Column type="buttons">
         <GridButton name="edit" icon="edit" />
       </Column>
@@ -178,7 +173,6 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
-
 
 
 
