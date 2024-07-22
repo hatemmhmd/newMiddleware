@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
+import TagBox, { TagBoxTypes } from 'devextreme-react/tag-box';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
@@ -7,8 +8,9 @@ import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import { useNavigate } from 'react-router-dom';
 import notify from 'devextreme/ui/notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faEdit, faStop, faDownload, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import './Adminstration.css';
+import { log } from 'console';
 
 interface System {
   systemID: number;
@@ -24,14 +26,13 @@ type SystemField = keyof System;
 
 const GridTable: React.FC = () => {
   const { setDateTime, setSelectedModule } = useContext(CheckContext);
-  const navigate = useNavigate();
   const [systems, setSystems] = useState<System[]>([]);
-  const [activeModule, setActiveModule] = useState<string | null>(localStorage.getItem('selectedModule'));
+  const [activeModule, setActiveModule] = useState('selectedModule');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://localhost:7249/api/Adminstration'); // Adjust URL as needed
+        const response = await fetch('https://localhost:7249/api/Adminstration');
         const data: System[] = await response.json();
 
         const today = new Date();
@@ -70,7 +71,7 @@ const GridTable: React.FC = () => {
     setSystems(updatedSystems);
   };
 
-  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
+  const handleDateChange = (index: number, field: string, value: Date | null) => {
     const today = new Date();
     const newSystems = [...systems];
     const system = newSystems[index];
@@ -97,15 +98,20 @@ const GridTable: React.FC = () => {
     setSystems(newSystems);
   };
 
+
+
+
+
   const dateCellRender = (cellData: any, dateField: SystemField) => {
     const today = new Date();
     return (
       <DateBox
+        readOnly
         type="datetime"
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
         onValueChanged={(e) => handleDateChange(cellData.rowIndex, dateField, e.value)}
-        displayFormat="yyyy-MM-dd - HH:mm"
+        displayFormat="dd-MM-yyyy - HH:mm"
       />
     );
   };
@@ -117,10 +123,11 @@ const GridTable: React.FC = () => {
         <Button icon="download" />
         <Button text="details" />
       </div>
-    ) : (
-      <GridButton name="edit" icon="edit" onClick={() => {/* handle edit action if needed */}} />
-    );
+    ) : <></>;
   };
+
+  const countryCellRender = (cellData: any) => <TagBox readOnly value={cellData.data.country.split(",")}
+    dataSource={[]} showClearButton={false} className='countryT'></TagBox>
 
   const systemNameCellRender = (cellData: any) => {
     return (
@@ -136,13 +143,17 @@ const GridTable: React.FC = () => {
       dataSource={systems}
       showBorders={true}
       columnAutoWidth={true}
-      rowAlternationEnabled={true}
-    >
+      rowAlternationEnabled={true}>
       <Editing mode="row" allowUpdating={true} />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
-      <Column dataField="country" caption="Country" allowEditing={false} width={"10%"} />
-      <Column width={"30%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
-      <Column width={"30%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+      <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
+      <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
+      <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+
+      <Column type="buttons">
+        <GridButton name="edit" icon="edit" />
+      </Column>
+
       <Column caption="Action" cellRender={actionCellRender} />
     </DataGrid>
   );
