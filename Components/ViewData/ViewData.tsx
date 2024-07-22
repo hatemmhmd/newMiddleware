@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Popup, Form, Button as GridButton, Item } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import TagBox from 'devextreme-react/tag-box';
 import { Button } from 'devextreme-react/button';
@@ -89,10 +89,6 @@ const GridTable: React.FC = () => {
         notify('End date must be greater than start date', 'warning', 2000);
         return;
       }
-
-      else {
-        console.log('AAAAAA')
-      }
       system[field] = value ? value.toISOString() : null;
     }
 
@@ -104,7 +100,7 @@ const GridTable: React.FC = () => {
     const today = new Date();
     return (
       <DateBox
-        readOnly={true}
+        readOnly
         type="datetime"
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
         min={today}
@@ -118,9 +114,6 @@ const GridTable: React.FC = () => {
             notify('End date must be greater than start date', 'warning', 2000);
             return;
           }
-          else {
-            console.log('0000000000000000000')
-          }
           handleDateChange(cellData.rowIndex, dateField, value);
         }}
         displayFormat="dd-MM-yyyy HH:mm"
@@ -129,13 +122,17 @@ const GridTable: React.FC = () => {
   };
 
   const actionCellRender = (cellData: any) => {
-    return cellData.data.isRunning ? (
-      <div>
-        <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
-        <Button icon="download" />
-        <Button text="details" />
-      </div>
-    ) : <></>;
+    if (cellData.data.isRunning) {
+      return (
+        <div>
+          <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
+          <Button icon="download" />
+          <Button text="details" />
+        </div>
+      );
+    } else {
+      return <Button icon="edit" onClick={() => cellData.component.editRow(cellData.rowIndex)} />;
+    }
   };
 
   const countryCellRender = (cellData: any) => (
@@ -158,21 +155,22 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-
-      <Editing mode="row" allowUpdating={true} useIcons={true}></Editing>
+      <Editing
+        mode="row"
+        allowUpdating={true}
+        useIcons={true}
+      />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
       <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
       <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
-      <Column type="buttons">
-        <GridButton name="edit" icon="edit" />
-      </Column>
       <Column caption="Action" cellRender={actionCellRender} />
     </DataGrid>
   );
 };
 
 export default GridTable;
+
 
 
 
