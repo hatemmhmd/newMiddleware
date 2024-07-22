@@ -1,11 +1,8 @@
-lll
-
-
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Button as GridButton, ToolbarItem } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import TagBox from 'devextreme-react/tag-box';
-import { Button, Popup } from 'devextreme-react';
+import { Button, Popup, Toolbar } from 'devextreme-react';
 import 'devextreme/dist/css/dx.light.css';
 import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import notify from 'devextreme/ui/notify';
@@ -90,7 +87,6 @@ const GridTable: React.FC = () => {
       }
       system[field] = value ? value.toISOString() : null;
     }
-
     newSystems[index] = system;
     setSystems(newSystems);
   };
@@ -105,6 +101,7 @@ const GridTable: React.FC = () => {
         min={today}
         onValueChanged={(e) => {
           const value = e.value;
+          console.log(value);
           if (dateField === 'startTime' && value && value < today) {
             notify('Start date cannot be in the past', 'warning', 2000);
             return;
@@ -126,7 +123,7 @@ const GridTable: React.FC = () => {
         <div>
           <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
           <Button icon="download" />
-          <Button text="details" />
+          <Button width={100} text="details" type="normal" stylingMode="outlined" />
         </div>
       );
     } else {
@@ -135,7 +132,7 @@ const GridTable: React.FC = () => {
   };
 
   const countryCellRender = (cellData: any) => (
-    <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} className='countryT' />
+    <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} className='countryTB' />
   );
 
   const systemNameCellRender = (cellData: any) => {
@@ -147,22 +144,6 @@ const GridTable: React.FC = () => {
     );
   };
 
-  const handleConfirm = () => {
-    if (selectedSystemID !== null) {
-      const updatedSystems = systems.map(system => {
-        if (system.systemID === selectedSystemID) {
-          return { ...system, isRunning: false };
-        }
-        return system;
-      });
-      setSystems(updatedSystems);
-    }
-    setPopupVisible(false);
-  };
-
-  const handleCancel = () => {
-    setPopupVisible(false);
-  };
 
   return (
     <>
@@ -184,36 +165,13 @@ const GridTable: React.FC = () => {
         <Column caption="Action" cellRender={actionCellRender} />
       </DataGrid>
 
-      <Popup
-        visible={popupVisible}
-        onHiding={handleCancel}
-        dragEnabled={false}
-        closeOnOutsideClick={false}
-        showCloseButton={true}
-        title="Confirm"
-        width={300}
-        height={200}
-      >
-        <div>
-          <p>Are you sure?</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
-            <Button
-              text="Confirm"
-              type="default"
-              onClick={handleConfirm}
-            />
-            <Button
-              text="Cancel"
-              onClick={handleCancel}
-            />
-          </div>
-        </div>
-      </Popup>
     </>
   );
 };
 
 export default GridTable;
+
+
 
 
 
