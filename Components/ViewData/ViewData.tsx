@@ -1,10 +1,11 @@
-pp
+uuu
+
 
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Popup as GridPopup, Button as GridButton } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import TagBox from 'devextreme-react/tag-box';
-import { Button, Popup } from 'devextreme-react/button';
+import { Button, Popup } from 'devextreme-react';
 import 'devextreme/dist/css/dx.light.css';
 import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import notify from 'devextreme/ui/notify';
@@ -194,14 +195,17 @@ const GridTable: React.FC = () => {
         height={200}
       >
         <p>Are you sure?</p>
-        <Button
-          text="Confirm"
-          onClick={handleConfirm}
-        />
-        <Button
-          text="Cancel"
-          onClick={handleCancel}
-        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
+          <Button
+            text="Confirm"
+            type="default"
+            onClick={handleConfirm}
+          />
+          <Button
+            text="Cancel"
+            onClick={handleCancel}
+          />
+        </div>
       </Popup>
     </>
   );
