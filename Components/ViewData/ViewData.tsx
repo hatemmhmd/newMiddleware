@@ -1,10 +1,10 @@
-hh
+pp
 
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Popup as GridPopup, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import TagBox from 'devextreme-react/tag-box';
-import { Button } from 'devextreme-react/button';
+import { Button, Popup } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
 import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import notify from 'devextreme/ui/notify';
@@ -28,6 +28,8 @@ const GridTable: React.FC = () => {
   const { setDateTime, setSelectedModule } = useContext(CheckContext);
   const [systems, setSystems] = useState<System[]>([]);
   const [activeModule, setActiveModule] = useState('selectedModule');
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [selectedSystemID, setSelectedSystemID] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,14 +63,8 @@ const GridTable: React.FC = () => {
   }, [setSelectedModule]);
 
   const onStopClick = (systemID: number) => {
-    const updatedSystems = systems.map(system => {
-      if (system.systemID === systemID) {
-        return { ...system, isRunning: false };
-      }
-      return system;
-    });
-
-    setSystems(updatedSystems);
+    setSelectedSystemID(systemID);
+    setPopupVisible(true);
   };
 
   const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
@@ -150,25 +146,64 @@ const GridTable: React.FC = () => {
     );
   };
 
+  const handleConfirm = () => {
+    if (selectedSystemID !== null) {
+      const updatedSystems = systems.map(system => {
+        if (system.systemID === selectedSystemID) {
+          return { ...system, isRunning: false };
+        }
+        return system;
+      });
+      setSystems(updatedSystems);
+    }
+    setPopupVisible(false);
+  };
+
+  const handleCancel = () => {
+    setPopupVisible(false);
+  };
+
   return (
-    <DataGrid
-      dataSource={systems}
-      showBorders={true}
-      columnAutoWidth={true}
-      rowAlternationEnabled={true}
-    >
-      <Editing
-        mode="row"
-        allowUpdating={true}
-        useIcons={true}
-        allowUpdating={true} // Allow row editing
-      />
-      <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
-      <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
-      <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
-      <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
-      <Column caption="Action" cellRender={actionCellRender} />
-    </DataGrid>
+    <>
+      <DataGrid
+        dataSource={systems}
+        showBorders={true}
+        columnAutoWidth={true}
+        rowAlternationEnabled={true}
+      >
+        <Editing
+          mode="row"
+          allowUpdating={true}
+          useIcons={true}
+        />
+        <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
+        <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
+        <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
+        <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+        <Column caption="Action" cellRender={actionCellRender} />
+      </DataGrid>
+
+      <Popup
+        visible={popupVisible}
+        onHiding={handleCancel}
+        dragEnabled={false}
+        closeOnOutsideClick={false}
+        showCloseButton={true}
+        title="Confirm"
+        width={300}
+        height={200}
+      >
+        <p>Are you sure?</p>
+        <Button
+          text="Confirm"
+          onClick={handleConfirm}
+        />
+        <Button
+          text="Cancel"
+          onClick={handleCancel}
+        />
+      </Popup>
+    </>
   );
 };
 
