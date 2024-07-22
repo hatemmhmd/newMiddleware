@@ -1,5 +1,3 @@
-p
-
 import React, { useContext, useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
@@ -72,7 +70,7 @@ const GridTable: React.FC = () => {
     setSystems(updatedSystems);
   };
 
-  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
+  const validateDateChange = (index: number, field: SystemField, value: Date | null) => {
     const today = new Date();
     const newSystems = [...systems];
     const system = newSystems[index];
@@ -80,23 +78,23 @@ const GridTable: React.FC = () => {
     if (field === 'startTime') {
       if (value && value < today) {
         notify('Start date cannot be in the past', 'warning', 2000);
-        return;
+        return false;
       }
-      system[field] = value ? value.toISOString() : null;
     } else if (field === 'endTime') {
       if (!system.startTime) {
         notify('Please select a start date first', 'warning', 2000);
-        return;
+        return false;
       }
-      if (value && new Date(value) <= new Date(system.startTime)) {
+      if (value && value <= new Date(system.startTime)) {
         notify('End date must be greater than start date', 'warning', 2000);
-        return;
+        return false;
       }
-      system[field] = value ? value.toISOString() : null;
     }
 
+    system[field] = value ? value.toISOString() : null;
     newSystems[index] = system;
     setSystems(newSystems);
+    return true;
   };
 
   const dateEditorRender = (cellData: any, dateField: SystemField) => {
@@ -108,19 +106,14 @@ const GridTable: React.FC = () => {
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
         onValueChanged={(e) => {
           const value = e.value;
-          if (dateField === 'startTime' && value && value < today) {
-            notify('Start date cannot be in the past', 'warning', 2000);
+          const isValid = validateDateChange(cellData.rowIndex, dateField, value);
+          if (!isValid) {
             cellData.setValue(undefined);
-            return;
+          } else {
+            cellData.setValue(value ? value.toISOString() : null);
           }
-          if (dateField === 'endTime' && (!cellData.data.startTime || value && new Date(value) <= new Date(cellData.data.startTime))) {
-            notify('End date must be greater than start date', 'warning', 2000);
-            cellData.setValue(undefined);
-            return;
-          }
-          cellData.setValue(value ? value.toISOString() : null);
         }}
-        displayFormat="dd-MM-yyyy - HH:mm"
+        displayFormat="dd-MM-yyyy HH:mm"
       />
     );
   };
@@ -185,6 +178,7 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
+
 
 
 
