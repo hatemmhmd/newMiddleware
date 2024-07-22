@@ -456,321 +456,209 @@ export default GridTable;
 
 
 -------------------------------------
-.data-grid-container {
-    margin: 30px 10px;
-}
 
 
+----------Home Code----------
 
-
-.dx-button.dx-button-has-icon:not(.dx-button-has-text):not(.dx-shape-standard) {
-    border-radius: 50%;
-    box-shadow: none;
-    margin: 0 7px;
-}
-
-
-.app .content {
-    line-height: 1.5;
-    flex-grow: 1;
-    margin: 15px !important;
-    width: 100%;
-}
-
-
-.dx-datagrid-headers .dx-datagrid-table .dx-row>td:hover .dx-datagrid-text-content {
-    color: #363640;
-}
-
-
-.data-grid-container .dx-header-row .dx-datagrid-text-content {
-    /* text-align: center; */
-    padding: 15px;
-    font-weight: 500;
-    letter-spacing: 2px;
-    color: #363640;
-}
-
-td {
-    text-align: center !important;
-    position: relative;
-    font-size: 15px !important;
-    padding: 10px 5px !important;
-}
-
-
-.countryTB {
-    background-color: transparent !important;
-    display: flex !important;
-    justify-content: left !important;
-    align-items: center !important;
-    cursor: default;
-}
-
-.dx-texteditor::after {
-    left: 0;
-    display: none !important;
-    right: 0;
-    bottom: 0;
-    height: 0 !important;
-    width: 0% !important;
-    content: "";
-    position: absolute;
-}
-
-.dx-tag-content {
-    cursor: default;
-    display: inline-block;
-    margin-top: 0px !important;
-    margin: 0 5px;
-    padding: 5px 15px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    min-width: 40px;
-    background-color: #cbcbcb;
-    border-radius: 2px;
-    color: #111;
-    border-radius: 10px;
-}
-
-
-.dx-texteditor.dx-editor-filled.dx-state-disabled .dx-texteditor-input,
-.dx-texteditor.dx-editor-filled.dx-state-readonly .dx-texteditor-input,
-.dx-texteditor.dx-editor-filled.dx-state-readonly.dx-state-hover .dx-texteditor-input {
-    color: #363640;
-}
-
-.dx-datebox:not(.dx-datebox-native).dx-auto-width .dx-texteditor-input,
-.dx-datebox:not(.dx-datebox-native):not(.dx-texteditor-empty).dx-auto-width .dx-texteditor-input {
-    padding-inline-end: 26px;
-    border-bottom: 1px solid #015699;
-    border-radius: 0;
-}
-
-.dx-tagbox .dx-tag-container.dx-texteditor-input-container {
-    padding: 10px 5px !important;
-    cursor: default;
-}
-
-.dx-tagbox .dx-tag-container.dx-texteditor-input-container:hover {
-    background-color: transparent;
-}
-
-.dx-tag-remove-button {
-    display: none !important;
-}
-
-.data-grid-container {
-    height: 100vh !important;
-}
-
-
-.dx-button-mode-contained .dx-icon-video {
-    color: green;
-    font-size: 22px;
-}
-
-.dx-button-mode-contained .dx-icon-download {
-    color: #111;
-    font-size: 20px;
-}
-
-.dx-button-mode-contained .dx-icon-clear {
-    color: red;
-    font-size: 20px;
-}
-
-.dx-widget .dx-button .dx-button-mode-contained .dx-button-normal .dx-button-has-text {
-    background-color: #111 !important;
-}
-
-.dx-datagrid-text-content.dx-text-content-alignment-left,
-.dx-datagrid-text-content {
-    padding: 10px 0;
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-
-
-.dx-button {
-    border-radius: 30px;
-    border-width: 1px;
-    border-style: solid;
-}
-
-.dx-button-content {
-    background-color: transparent;
-    border-radius: 30px;
-    transition: 0.2s linear;
-}
-
-input {
-    padding: 5px 36px;
-    letter-spacing: 1px;
-    border-radius: 10px;
-    font-size: 16px;
-    border: 1px solid #363640;
-}
-
-.dx-toast-warning {
-    background-color: #ff3939;
-}
-
-.dx-toast-message {
-    letter-spacing: 1px;
-    font-size: 15px;
-    font-weight: 400;
-    text-transform: capitalize;
-}
-
-.spinner {
-    position: absolute;
-    left: 20px;
-    top: 24px;
-    font-size: 21px;
-    color: green;
-}
-
-.dx-texteditor.dx-editor-filled {
-    background: rgba(51, 51, 51, .05);
-    border-bottom: 1px solid rgb(1 86 153);
-    border-radius: 4px;
-}
-
-----------------------
-
-import { useContext, useState } from 'react';
-import '../Systems/System.css';
-import { CheckContext } from '../CutomHook/CustomHookProvider';
-import { Bounce, ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useContext, useEffect, useState } from 'react';
+import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
+import DateBox from 'devextreme-react/date-box';
+import { Button } from 'devextreme-react/button';
+import 'devextreme/dist/css/dx.light.css';
+import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import { useNavigate } from 'react-router-dom';
+import notify from 'devextreme/ui/notify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner, faEdit } from '@fortawesome/free-solid-svg-icons';
+import './Design.css';
 
-function System() {
-    const { setDateTime, setSelectedModule } = useContext(CheckContext);
+import data from './Data.json';
 
-    const navigate = useNavigate();
+interface System {
+  SystemID: number;
+  PIRID: number | null;
+  SystemName: string;
+  Country: string;
+  StartTime: string | null;
+  EndTime: string | null;
+  IsRunning: boolean;
+}
 
-    const initialSystems = [
-        { name: 'Arabia', loading: false, startTime: '', endTime: '' },
-        { name: 'FundBot', loading: false, startTime: '', endTime: '' },
-        { name: 'COB', loading: false, startTime: '', endTime: '' },
-        { name: 'Helios', loading: false, startTime: '', endTime: '' },
-        { name: 'Reflect', loading: false, startTime: '', endTime: '' },
-    ];
+type SystemField = keyof System;
 
-    const [systems, setSystems] = useState(initialSystems);
+const GridTable: React.FC = () => {
+  const { setDateTime, setSelectedModule } = useContext(CheckContext);
+  const navigate = useNavigate();
+  const [systems, setSystems] = useState<System[]>(data);
+  const [activeModule, setActiveModule] = useState('selectedModule');
+  const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
 
-    const sortSystems = (systemsArray: typeof initialSystems) => {
-        return systemsArray.sort((a, b) => (a.loading === b.loading) ? 0 : a.loading ? -1 : 1);
-    };
+  useEffect(() => {
+    const savedModule = localStorage.getItem('selectedModule');
+    if (savedModule) {
+      setSelectedModule(savedModule);
+      setActiveModule(savedModule);
+    }
+  }, [setSelectedModule]);
 
-    const ifuserCheck = (index: number) => {
-        const system = systems[index];
-        if (!system.startTime) {
-            toast.error('Please Enter Start Date Time..', {
-                position: "bottom-left",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                className: 'custom-toast',
-                transition: Bounce,
-            });
-            return;
-        }
-        const newSystems = [...systems];
-        newSystems[index].loading = true;
+  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const newSystems = [...systems];
+    const system = newSystems[index];
 
-        setSystems(sortSystems(newSystems));
-    };
+    if (field === 'StartTime') {
+      if (value && value.getTime() < today) {
+        notify('Start date cannot be in the past', 'warning', 2000);
+        return;
+      }
+      system[field] = value ? value.toISOString() : null;
+    } else if (field === 'EndTime') {
+      if (!system.StartTime) {
+        notify('Please select a start date first', 'warning', 2000);
+        return;
+      }
+      if (value && value.getTime() < new Date(system.StartTime).getTime()) {
+        notify('End date must be greater than or equal to the start date', 'warning', 2000);
+        return;
+      }
+      system[field] = value ? value.toISOString() : null;
+    }
 
-    const handleClick = (index: number) => {
-        const system = systems[index];
-        setSelectedModule(system.name);
-        setDateTime(system.startTime);
-        navigate('/DataPage');
-    };
+    newSystems[index] = system;
+    setSystems(newSystems);
+  };
 
-    const handleInputChange = (index: number, field: string, value: string | boolean) => {
-        const newSystems = [...systems];
-        newSystems[index][field] = value;
-        if (field === 'startTime' && typeof value === 'string') {
-            if (newSystems[index].endTime && new Date(value) >= new Date(newSystems[index].endTime)) {
-                newSystems[index].endTime = '';
-            }
-        }
-        setSystems(sortSystems(newSystems));
-    };
-
-    const handleStop = (index: number) => {
-        const newSystems = [...systems];
-        newSystems[index].loading = false;
-        newSystems[index].startTime = '';
-        newSystems[index].endTime = '';
-        setSystems(sortSystems(newSystems));
-    };
+  const dateCellRender = (cellData: any, dateField: SystemField) => {
+    const index = systems.findIndex(system => system.SystemID === cellData.data.SystemID);
+    const today = new Date();
+    const isEditing = cellData.data.SystemID === editingRowKey;
 
     return (
-        <div className="tableParent">
-            <ToastContainer />
-            <table className='SystemTable'>
-                <thead>
-                    <tr>
-                        <th>System</th>
-                        <th>Schedule</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {systems.map((system, index) => (
-                        <tr key={system.name}>
-                            <td className='systemName'>
-                                {system.loading && <i className="bi bi-arrow-repeat"></i>}
-                                <label>{system.name}</label>
-                            </td>
-                            <td className='dateTime'>
-                                <input
-                                    type='datetime-local'
-                                    value={system.startTime}
-                                    onChange={(e) => handleInputChange(index, 'startTime', e.target.value)}
-                                    disabled={system.loading} className={system.loading ? "disable" : ""} />
-
-                                <span> <i className="bi bi-arrow-right"></i> </span>
-
-                                <input
-                                    type='datetime-local'
-                                    value={system.endTime}
-                                    min={system.startTime}
-                                    onChange={(e) => handleInputChange(index, 'endTime', e.target.value)}
-                                    disabled={system.loading} className={system.loading ? "disable" : ""}
-                                />
-                            </td>
-                            <td className='actions'>
-                                {system.loading ? (
-                                    <div className='stop-download'>
-                                        <i className="bi bi-stop-circle" onClick={() => handleStop(index)}></i>
-                                        <i className="bi bi-file-earmark-arrow-down"></i>
-                                        <button onClick={() => handleClick(index)}>details</button>
-                                    </div>
-                                ) : (
-                                    <i className="bi bi-play-circle" onClick={() => ifuserCheck(index)}></i>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+      <DateBox
+        placeholder='Please Enter Date'
+        type='datetime'
+        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
+        min={dateField === 'StartTime' ? today : cellData.data.StartTime ? new Date(cellData.data.StartTime) : today}
+        onValueChanged={(e) => handleDateChange(index, dateField, e.value)}
+        displayFormat="yyyy-MM-dd - HH:mm"
+        disabled={!isEditing}
+      />
     );
-}
+  };
 
-export default System;
+  const systemNameCellRender = (cellData: any) => {
+    return (
+      <div>
+        {cellData.data.SystemName}
+        {cellData.data.IsRunning && <FontAwesomeIcon icon={faSpinner} spin className='spinner' />}
+        {cellData.data.StartTime === null && !cellData.data.IsRunning && <FontAwesomeIcon icon={faEdit} />}
+      </div>
+    );
+  };
+
+  const actionCellRender = (cellData: any) => {
+    if (cellData.data.IsRunning) {
+      return (
+        <div>
+          <Button icon="clear" onClick={() => onStopClick(cellData.data.SystemID)} />
+          <Button icon='download' />
+          <Button text="Details" />
+        </div>
+      );
+    }
+    return null; // Or any other action for non-running systems
+  };
+
+  const onStopClick = (systemID: number) => {
+    const updatedSystems = systems.map(system => {
+      if (system.SystemID === systemID) {
+        return { ...system, IsRunning: false };
+      }
+      return system;
+    });
+
+    setSystems(updatedSystems);
+  };
+
+  const onRowUpdating = (e: any) => {
+    const { newData, oldData } = e;
+    const today = new Date().setHours(0, 0, 0, 0);
+    if (newData.StartTime && new Date(newData.StartTime).getTime() < today) {
+      e.cancel = true;
+      notify('Start date cannot be in the past', 'warning', 2000);
+    } else if (newData.EndTime && new Date(newData.EndTime).getTime() < new Date(newData.StartTime || oldData.StartTime).getTime()) {
+      e.cancel = true;
+      notify('End date must be greater than or equal to the start date', 'warning', 2000);
+    }
+  };
+
+  const onEditingStart = (e: any) => {
+    setEditingRowKey(e.key);
+  };
+
+  const onSaved = (e: any) => {
+    setEditingRowKey(null);
+  };
+
+  const onEditCanceling = (e: any) => {
+    setEditingRowKey(null);
+  };
+
+  return (
+    <DataGrid
+      dataSource={systems}
+      showBorders={true}
+      columnAutoWidth={true}
+      rowAlternationEnabled={true}
+      onRowUpdating={onRowUpdating}
+      onEditingStart={onEditingStart}
+      onSaved={onSaved}
+      onEditCanceling={onEditCanceling}
+    >
+      <Column
+        dataField="SystemID"
+        caption="System ID"
+        width={"7%"}
+        allowEditing={false}
+      />
+      <Column
+        dataField="SystemName"
+        caption="System"
+        cellRender={systemNameCellRender}
+        width={"9%"}
+        allowEditing={false}
+      />
+      <Column dataField="Country" caption="Country" allowEditing={false} width={"9%"} />
+      <Column
+        width={"28%"}
+        dataField="StartTime"
+        caption="Start Date"
+        dataType='datetime'
+        cellRender={(cellData) => dateCellRender(cellData, 'StartTime')}
+      />
+      <Column
+        width={"28%"}
+        dataField="EndTime"
+        caption="End Date"
+        dataType='datetime'
+        cellRender={(cellData) => dateCellRender(cellData, 'EndTime')}
+      />
+      <Column
+        caption="Action"
+        cellRender={actionCellRender}
+        allowEditing={false}
+      />
+      <Editing
+        mode="row"
+        allowUpdating={true}
+        useIcons={true}
+        startEditAction="click"
+      />
+    </DataGrid>
+  );
+};
+
+export default GridTable;
 
 
 
