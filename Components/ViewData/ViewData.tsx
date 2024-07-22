@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
@@ -117,9 +117,10 @@ const GridTable: React.FC = () => {
         <Button icon="download" />
         <Button text="details" />
       </div>
-    ) : <div> <Editing mode="row" allowUpdating={true} /></div>
+    ) : (
+      <GridButton name="edit" icon="edit" onClick={() => {/* handle edit action if needed */}} />
+    );
   };
-
 
   const systemNameCellRender = (cellData: any) => {
     return (
@@ -137,8 +138,7 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-
-
+      <Editing mode="row" allowUpdating={true} />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"10%"} />
       <Column width={"30%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
@@ -149,6 +149,7 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
+
 
 -----------------------------------------
 
