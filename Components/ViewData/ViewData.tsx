@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
-import TagBox, { TagBoxTypes } from 'devextreme-react/tag-box';
+import TagBox from 'devextreme-react/tag-box';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
@@ -10,7 +10,6 @@ import notify from 'devextreme/ui/notify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import './Adminstration.css';
-import { log } from 'console';
 
 interface System {
   systemID: number;
@@ -71,7 +70,7 @@ const GridTable: React.FC = () => {
     setSystems(updatedSystems);
   };
 
-  const handleDateChange = (index: number, field: string, value: Date | null) => {
+  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
     const today = new Date();
     const newSystems = [...systems];
     const system = newSystems[index];
@@ -98,15 +97,10 @@ const GridTable: React.FC = () => {
     setSystems(newSystems);
   };
 
-
-
-
-
   const dateCellRender = (cellData: any, dateField: SystemField) => {
     const today = new Date();
     return (
       <DateBox
-        readOnly
         type="datetime"
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
@@ -126,8 +120,9 @@ const GridTable: React.FC = () => {
     ) : <></>;
   };
 
-  const countryCellRender = (cellData: any) => <TagBox readOnly value={cellData.data.country.split(",")}
-    dataSource={[]} showClearButton={false} className='countryT'></TagBox>
+  const countryCellRender = (cellData: any) => (
+    <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} className='countryT' />
+  );
 
   const systemNameCellRender = (cellData: any) => {
     return (
@@ -138,29 +133,50 @@ const GridTable: React.FC = () => {
     );
   };
 
+  const onRowUpdating = (e: any) => {
+    const today = new Date();
+    const newData = e.newData;
+
+    if (newData.startTime) {
+      const startDate = new Date(newData.startTime);
+      if (startDate < today) {
+        e.cancel = true;
+        notify('Start date cannot be in the past', 'warning', 2000);
+      }
+    }
+
+    if (newData.endTime) {
+      const startDate = new Date(e.oldData.startTime || e.newData.startTime);
+      const endDate = new Date(newData.endTime);
+      if (endDate <= startDate) {
+        e.cancel = true;
+        notify('End date must be greater than start date', 'warning', 2000);
+      }
+    }
+  };
+
   return (
     <DataGrid
       dataSource={systems}
       showBorders={true}
       columnAutoWidth={true}
-      rowAlternationEnabled={true}>
+      rowAlternationEnabled={true}
+      onRowUpdating={onRowUpdating}
+    >
       <Editing mode="row" allowUpdating={true} />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
       <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
       <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
-
       <Column type="buttons">
         <GridButton name="edit" icon="edit" />
       </Column>
-
       <Column caption="Action" cellRender={actionCellRender} />
     </DataGrid>
   );
 };
 
 export default GridTable;
-
 
 -----------------------------------------
 
