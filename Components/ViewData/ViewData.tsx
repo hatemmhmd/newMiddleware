@@ -104,7 +104,18 @@ const GridTable: React.FC = () => {
         type="datetime"
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
-        onValueChanged={(e) => handleDateChange(cellData.rowIndex, dateField, e.value)}
+        onValueChanged={(e) => {
+          const value = e.value;
+          if (dateField === 'startTime' && value && value < today) {
+            notify('Start date cannot be in the past', 'warning', 2000);
+            return;
+          }
+          if (dateField === 'endTime' && (!cellData.data.startTime || value && new Date(value) <= new Date(cellData.data.startTime))) {
+            notify('End date must be greater than start date', 'warning', 2000);
+            return;
+          }
+          handleDateChange(cellData.rowIndex, dateField, value);
+        }}
         displayFormat="dd-MM-yyyy - HH:mm"
       />
     );
@@ -154,6 +165,7 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
+
 
 
 
