@@ -133,35 +133,12 @@ const GridTable: React.FC = () => {
     );
   };
 
-  const onRowUpdating = (e: any) => {
-    const today = new Date();
-    const newData = e.newData;
-
-    if (newData.startTime) {
-      const startDate = new Date(newData.startTime);
-      if (startDate < today) {
-        e.cancel = true;
-        notify('Start date cannot be in the past', 'warning', 2000);
-      }
-    }
-
-    if (newData.endTime) {
-      const startDate = new Date(e.oldData.startTime || e.newData.startTime);
-      const endDate = new Date(newData.endTime);
-      if (endDate <= startDate) {
-        e.cancel = true;
-        notify('End date must be greater than start date', 'warning', 2000);
-      }
-    }
-  };
-
   return (
     <DataGrid
       dataSource={systems}
       showBorders={true}
       columnAutoWidth={true}
       rowAlternationEnabled={true}
-      onRowUpdating={onRowUpdating}
     >
       <Editing mode="row" allowUpdating={true} />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
@@ -177,6 +154,9 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
+
+
+
 
 -----------------------------------------
 
