@@ -1,7 +1,7 @@
- oo
+p
 
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, Popup, Form, Button as GridButton } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import TagBox from 'devextreme-react/tag-box';
 import { Button } from 'devextreme-react/button';
@@ -99,26 +99,26 @@ const GridTable: React.FC = () => {
     setSystems(newSystems);
   };
 
-  const dateCellRender = (cellData: any, dateField: SystemField) => {
+  const dateEditorRender = (cellData: any, dateField: SystemField) => {
     const today = new Date();
-    const isEditing = cellData.column.command === "edit";
     return (
       <DateBox
-        readOnly={!isEditing}
         type="datetime"
-        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
+        value={cellData.value ? new Date(cellData.value) : undefined}
         min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
         onValueChanged={(e) => {
           const value = e.value;
           if (dateField === 'startTime' && value && value < today) {
             notify('Start date cannot be in the past', 'warning', 2000);
+            cellData.setValue(undefined);
             return;
           }
           if (dateField === 'endTime' && (!cellData.data.startTime || value && new Date(value) <= new Date(cellData.data.startTime))) {
             notify('End date must be greater than start date', 'warning', 2000);
+            cellData.setValue(undefined);
             return;
           }
-          handleDateChange(cellData.rowIndex, dateField, value);
+          cellData.setValue(value ? value.toISOString() : null);
         }}
         displayFormat="dd-MM-yyyy - HH:mm"
       />
@@ -155,19 +155,27 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-      <Editing mode="popup" allowUpdating={true} useIcons={true}>
-        <Popup title="Edit System" showTitle={true} width={700} height={525} />
-        <Form>
-          <Item dataField="systemName" />
-          <Item dataField="country" />
-          <Item dataField="startTime" />
-          <Item dataField="endTime" />
-        </Form>
-      </Editing>
+      <Editing
+        mode="row"
+        allowUpdating={true}
+        confirmDelete={false}
+      />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
-      <Column width={"25%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
-      <Column width={"25%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+      <Column
+        width={"25%"}
+        dataField="startTime"
+        dataType='datetime'
+        caption="Start Date"
+        cellRender={(cellData) => dateEditorRender(cellData, 'startTime')}
+      />
+      <Column
+        width={"25%"}
+        dataField="endTime"
+        dataType='datetime'
+        caption="End Date"
+        cellRender={(cellData) => dateEditorRender(cellData, 'endTime')}
+      />
       <Column type="buttons">
         <GridButton name="edit" icon="edit" />
       </Column>
