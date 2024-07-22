@@ -115,14 +115,11 @@ const GridTable: React.FC = () => {
       <div>
         <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
         <Button icon="download" />
-        <Button icon="info" />
+        <Button text="details" />
       </div>
-    ) : <></>
+    ) : <div> <Editing mode="row" allowUpdating={true} /></div>
   };
 
-  const statusCellRender = (cellData: any) => {
-    return cellData.data.isRunning ? <FontAwesomeIcon icon={faSpinner} spin /> : null;
-  };
 
   const systemNameCellRender = (cellData: any) => {
     return (
@@ -140,12 +137,12 @@ const GridTable: React.FC = () => {
       columnAutoWidth={true}
       rowAlternationEnabled={true}
     >
-      <Editing mode="row" allowUpdating={true} />
 
-      <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"9%"} allowEditing={false} />
-      <Column dataField="country" caption="Country" allowEditing={false} width={"9%"} />
-      <Column width={"28%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
-      <Column width={"28%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
+
+      <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
+      <Column dataField="country" caption="Country" allowEditing={false} width={"10%"} />
+      <Column width={"30%"} dataField="startTime" dataType='datetime' caption="Start Date" cellRender={(cellData) => dateCellRender(cellData, 'startTime')} />
+      <Column width={"30%"} dataField="endTime" dataType='datetime' caption="End Date" cellRender={(cellData) => dateCellRender(cellData, 'endTime')} />
       <Column caption="Action" cellRender={actionCellRender} />
     </DataGrid>
   );
