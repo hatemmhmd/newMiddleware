@@ -461,36 +461,103 @@ export default GridTable;
 }
 
 
-.data-grid-container .dx-datagrid-headers {
-    background-color: #393e46 !important;
-    color: aliceblue !important;
+
+
+.dx-button.dx-button-has-icon:not(.dx-button-has-text):not(.dx-shape-standard) {
+    border-radius: 50%;
+    box-shadow: none;
+    margin: 0 7px;
 }
 
 
-.dx-datagrid-headers .dx-datagrid-table .dx-row>td:hover:not(.dx-command-select):not(.dx-command-expand):not(.dx-editor-cell):not(.dx-command-edit):not(.dx-datagrid-group-space) {
-    background-color: transparent;
-    cursor: auto;
+.app .content {
+    line-height: 1.5;
+    flex-grow: 1;
+    margin: 15px !important;
+    width: 100%;
 }
+
 
 .dx-datagrid-headers .dx-datagrid-table .dx-row>td:hover .dx-datagrid-text-content {
     color: #363640;
 }
 
-/* .data-grid-container .dx-header-row .dx-datagrid-text-content {
-     text-align: center;
-     padding: 15px;
-     font-weight: 500;
-     letter-spacing: 2px;
-     color: #363640;
- } */
 
-
+.data-grid-container .dx-header-row .dx-datagrid-text-content {
+    /* text-align: center; */
+    padding: 15px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: #363640;
+}
 
 td {
-    text-align: center;
+    text-align: center !important;
     position: relative;
     font-size: 15px !important;
     padding: 10px 5px !important;
+}
+
+
+.countryTB {
+    background-color: transparent !important;
+    display: flex !important;
+    justify-content: left !important;
+    align-items: center !important;
+    cursor: default;
+}
+
+.dx-texteditor::after {
+    left: 0;
+    display: none !important;
+    right: 0;
+    bottom: 0;
+    height: 0 !important;
+    width: 0% !important;
+    content: "";
+    position: absolute;
+}
+
+.dx-tag-content {
+    cursor: default;
+    display: inline-block;
+    margin-top: 0px !important;
+    margin: 0 5px;
+    padding: 5px 15px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    min-width: 40px;
+    background-color: #cbcbcb;
+    border-radius: 2px;
+    color: #111;
+    border-radius: 10px;
+}
+
+
+.dx-texteditor.dx-editor-filled.dx-state-disabled .dx-texteditor-input,
+.dx-texteditor.dx-editor-filled.dx-state-readonly .dx-texteditor-input,
+.dx-texteditor.dx-editor-filled.dx-state-readonly.dx-state-hover .dx-texteditor-input {
+    color: #363640;
+}
+
+.dx-datebox:not(.dx-datebox-native).dx-auto-width .dx-texteditor-input,
+.dx-datebox:not(.dx-datebox-native):not(.dx-texteditor-empty).dx-auto-width .dx-texteditor-input {
+    padding-inline-end: 26px;
+    border-bottom: 1px solid #015699;
+    border-radius: 0;
+}
+
+.dx-tagbox .dx-tag-container.dx-texteditor-input-container {
+    padding: 10px 5px !important;
+    cursor: default;
+}
+
+.dx-tagbox .dx-tag-container.dx-texteditor-input-container:hover {
+    background-color: transparent;
+}
+
+.dx-tag-remove-button {
+    display: none !important;
 }
 
 .data-grid-container {
@@ -498,24 +565,78 @@ td {
 }
 
 
-.data-grid-container .icon-cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.dx-button-mode-contained .dx-icon-video {
+    color: green;
+    font-size: 22px;
 }
 
-.data-grid-container .icon-cell .dx-icon-video {
-    font-size: 30px;
-    color: #4CAF50;
-    cursor: pointer;
-}
-
-
-.data-grid-container .icon-cell .dx-icon-pulldown {
+.dx-button-mode-contained .dx-icon-download {
+    color: #111;
     font-size: 20px;
+}
+
+.dx-button-mode-contained .dx-icon-clear {
+    color: red;
+    font-size: 20px;
+}
+
+.dx-widget .dx-button .dx-button-mode-contained .dx-button-normal .dx-button-has-text {
+    background-color: #111 !important;
+}
+
+.dx-datagrid-text-content.dx-text-content-alignment-left,
+.dx-datagrid-text-content {
+    padding: 10px 0;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+
+
+.dx-button {
+    border-radius: 30px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.dx-button-content {
+    background-color: transparent;
+    border-radius: 30px;
+    transition: 0.2s linear;
+}
+
+input {
+    padding: 5px 36px;
+    letter-spacing: 1px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: 1px solid #363640;
+}
+
+.dx-toast-warning {
+    background-color: #ff3939;
+}
+
+.dx-toast-message {
+    letter-spacing: 1px;
+    font-size: 15px;
+    font-weight: 400;
+    text-transform: capitalize;
+}
+
+.spinner {
     position: absolute;
-    left: 50%;
-    color: #363640;
+    left: 20px;
+    top: 24px;
+    font-size: 21px;
+    color: green;
+}
+
+.dx-texteditor.dx-editor-filled {
+    background: rgba(51, 51, 51, .05);
+    border-bottom: 1px solid rgb(1 86 153);
+    border-radius: 4px;
 }
 
 ----------------------
