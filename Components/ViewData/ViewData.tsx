@@ -1,3 +1,5 @@
+hh
+
 import React, { useContext, useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
@@ -159,6 +161,7 @@ const GridTable: React.FC = () => {
         mode="row"
         allowUpdating={true}
         useIcons={true}
+        allowUpdating={true} // Allow row editing
       />
       <Column dataField="systemName" caption="System" cellRender={systemNameCellRender} width={"10%"} allowEditing={false} />
       <Column dataField="country" caption="Country" allowEditing={false} width={"20%"} cellRender={countryCellRender} />
@@ -170,6 +173,7 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
+
 
 
 
