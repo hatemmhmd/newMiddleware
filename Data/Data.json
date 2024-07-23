@@ -1,6 +1,56 @@
 kk
 
 
+this is my front end function 
+ const sendDataToAPI = async (systemID: number, startTime: string, endTime: string) => {
+    console.log(typeof startTime)
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/insertpir`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ systemID, startTime, endTime }),
+      });
+
+      console.log("sara")
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  };
+and this is my controller 
+  [HttpPost]
+        [Route("insertpir")]
+        public async Task<ActionResult> InsertPIR([FromBody] PIRDTO pir)
+        {
+               await _pirScheduleService.CreateAsync(pir);
+                return Ok();
+        }
+this is controller method 
+  public async Task<PirSchedule> CreateAsync(PIRDTO pir)
+        {
+            ValidatePIRAsync(pir);
+
+            var system = await _pirSystemRepository.GetByIdAsync(pir.SystemID);
+            var pirSchedule = new PirSchedule
+            {
+                SystemId = pir.SystemID,
+                PirendDate = DateTime.Parse(pir.EndDate),
+                PirstartDate = DateTime.Parse(pir.StartDate),
+                PirlevelDuration = system.PirlevelDuration,
+                IsActive = true
+            };
+
+            return await _pirScheduleRepository.AddAsync(pirSchedule);
+        }
+front end cajn npt call the backend ?
+
+
+
+
+
+--------------------
+
 const sendDataToAPI = async (systemID: number, startTime: string | null, endTime: string | null) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_API}/endpoint`, {
