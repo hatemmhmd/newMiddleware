@@ -1,5 +1,28 @@
 kk
 
+
+export default ContactAdd;
+const sendDataToAPI = async () => {
+  try {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const response = await fetch('URL', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(e.Changes[0].data.SystemID),
+    });
+    const result = await response.json();
+    console.log('Success:', result);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+
+
 import React, { useContext, useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, Button as GridButton, ToolbarItem } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
