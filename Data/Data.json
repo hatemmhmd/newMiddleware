@@ -11,7 +11,6 @@ import { faSpinner, faEdit } from '@fortawesome/free-solid-svg-icons';
 import './Adminstration.css';
 import { TagBox } from 'devextreme-react';
 
-
 interface System {
   systemID: number;
   pirid: number | null;
@@ -31,11 +30,9 @@ const GridTable: React.FC = () => {
   const [activeModule, setActiveModule] = useState('selectedModule');
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // read from env variable
         const response = await fetch('https://localhost:7249/api/Adminstration');
         const data: System[] = await response.json();
         setSystems(data);
@@ -45,7 +42,6 @@ const GridTable: React.FC = () => {
     };
     fetchData();
   }, []);
-
 
   useEffect(() => {
     const savedModule = localStorage.getItem('selectedModule');
@@ -66,8 +62,7 @@ const GridTable: React.FC = () => {
         return;
       }
       system[field] = value ? value.toISOString() : null;
-    } 
-    else if (field === 'endTime') {
+    } else if (field === 'endTime') {
       if (!system.startTime) {
         notify('Please select a start date first', 'warning', 2000);
         return;
@@ -84,33 +79,32 @@ const GridTable: React.FC = () => {
   };
 
   const dateCellRender = (cellData: any, dateField: SystemField) => {
-    const index = systems.findIndex(system => system.systemID === cellData.data.SystemID);
+    const index = systems.findIndex(system => system.systemID === cellData.data.systemID);
     const today = new Date();
-    const isEditing = cellData.data.SystemID === editingRowKey;
+    const isEditing = cellData.data.systemID === editingRowKey;
 
     return (
       <DateBox
         placeholder='Please Enter Date'
         type='datetime'
         value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
-        min={dateField === 'startTime' ? today : cellData.data.StartTime ? new Date(cellData.data.StartTime) : today}
+        min={dateField === 'startTime' ? today : cellData.data.startTime ? new Date(cellData.data.startTime) : today}
         onValueChanged={(e) => handleDateChange(index, dateField, e.value)}
         displayFormat="yyyy-MM-dd - HH:mm"
         disabled={!isEditing}
+        showClearButton={true}
       />
     );
   };
 
   const systemNameCellRender = (cellData: any) => {
     return (
-
       <div>
         {cellData.data.systemName}
         {cellData.data.isRunning && <FontAwesomeIcon icon={faSpinner} spin className='spinner' />}
       </div>
     );
   };
-
 
   const actionCellRender = (cellData: any) => {
     if (cellData.data.isRunning) {
@@ -128,11 +122,10 @@ const GridTable: React.FC = () => {
     <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} className='countryTB' />
   );
 
-
   const onStopClick = (systemID: number) => {
     const updatedSystems = systems.map(system => {
       if (system.systemID === systemID) {
-        return { ...system, IsRunning: false };
+        return { ...system, isRunning: false };
       }
       return system;
     });
@@ -143,12 +136,19 @@ const GridTable: React.FC = () => {
   const onRowUpdating = (e: any) => {
     const { newData, oldData } = e;
     const today = new Date().setHours(0, 0, 0, 0);
-    if (newData.StartTime && new Date(newData.StartTime).getTime() < today) {
+
+    if (newData.startTime && new Date(newData.startTime).getTime() < today) {
       e.cancel = true;
       notify('Start date cannot be in the past', 'warning', 2000);
-    } else if (newData.EndTime && new Date(newData.EndTime).getTime() < new Date(newData.StartTime || oldData.StartTime).getTime()) {
+    } else if (!newData.startTime && !oldData.startTime) {
+      e.cancel = true;
+      notify('Start date is required', 'error', 2000);
+    } else if (newData.endTime && new Date(newData.endTime).getTime() < new Date(newData.startTime || oldData.startTime).getTime()) {
       e.cancel = true;
       notify('End date must be greater than or equal to the start date', 'warning', 2000);
+    } else if (!newData.endTime && !oldData.endTime) {
+      e.cancel = true;
+      notify('End date is required', 'error', 2000);
     }
   };
 
@@ -158,6 +158,7 @@ const GridTable: React.FC = () => {
 
   const onSaved = (e: any) => {
     setEditingRowKey(null);
+    // Refresh data or take other actions if needed
   };
 
   const onEditCanceling = (e: any) => {
@@ -175,7 +176,6 @@ const GridTable: React.FC = () => {
       onSaved={onSaved}
       onEditCanceling={onEditCanceling}
     >
-
       <Editing
         mode="row"
         allowUpdating={true}
@@ -190,7 +190,8 @@ const GridTable: React.FC = () => {
         width={"10%"}
         allowEditing={false} />
 
-      <Column dataField="country"
+      <Column
+        dataField="country"
         caption="Country"
         allowEditing={false}
         width={"20%"}
@@ -198,17 +199,15 @@ const GridTable: React.FC = () => {
 
       <Column
         width={"25%"}
-        dataField="StartTime"
+        dataField="startTime"
         caption="Start Date"
         dataType='datetime'
         cellRender={(cellData) => dateCellRender(cellData, 'startTime')}
       />
 
-
-
       <Column
         width={"20%"}
-        dataField="EndTime"
+        dataField="endTime"
         caption="End Date"
         dataType='datetime'
         cellRender={(cellData) => dateCellRender(cellData, 'endTime')}
@@ -223,7 +222,6 @@ const GridTable: React.FC = () => {
         cellRender={actionCellRender}
         allowEditing={false}
       />
-
     </DataGrid>
   );
 };
