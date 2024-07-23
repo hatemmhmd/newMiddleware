@@ -1,93 +1,231 @@
-[
-    {
-        "id": 1,
-        "name": "HR",
-        "tables": [
-            {
-                "tableId": 1,
-                "tableName": "Employees",
-                "primaryKey": "EmployeeID",
-                "description": "Description for Employees tables in database HR",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "Employee ID",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 12,
-                        "columnName": "Employee Name",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 2,
-                "tableName": "Users",
-                "primaryKey": "UserID",
-                "description": "Description for Users tables in database HR",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "UserID",
-                        "dataType": "number"
-                    },
-                    {
-                        "columnId": 1,
-                        "columnName": "User Name",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 2,
-                        "columnName": "User Age",
-                        "dataType": "string"
-                    },
-                    {
-                        "columnId": 3,
-                        "columnName": "Gender",
-                        "dataType": "string"
-                    }
-                ]
-            }
-        ]
-    },
+import React, { useContext, useEffect, useState } from 'react';
+import DataGrid, { Column, Editing, Button as GridButton, ToolbarItem } from 'devextreme-react/data-grid';
+import DateBox from 'devextreme-react/date-box';
+import { Button } from 'devextreme-react/button';
+import 'devextreme/dist/css/dx.light.css';
+import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
+import { useNavigate } from 'react-router-dom';
+import notify from 'devextreme/ui/notify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner, faEdit } from '@fortawesome/free-solid-svg-icons';
+import './Adminstration.css';
+import { TagBox } from 'devextreme-react';
 
 
-    {
-        "id": 2,
-        "name": "Customer",
-        "tables": [
-            {
-                "tableId": 3,
-                "tableName": "Customer Name",
-                "primaryKey": "CustomerID",
-                "description": "Description for Customer Name tables in database Customers",
-                "columns":[
-                    {
-                        "columnId": 1,
-                        "columnName": "CustomerID",
-                        "dataType": "string"
-                    }
-                ]
-            },
-            {
-                "tableId": 2,
-                "tableName": "Customer Age",
-                "primaryKey": "UserID",
-                "description": "Description for Customer Age tables in database Customers",
-                "columns": [
-                    {
-                        "columnId": 1,
-                        "columnName": "Customer Gender",
-                        "dataType": "number"
-                    },
-                    {
-                        "columnId": 1,
-                        "columnName": "Customer Age",
-                        "dataType": "number"
-                    }
-                ]
-            }
-        ]
+interface System {
+  systemID: number;
+  pirid: number | null;
+  systemName: string;
+  country: string;
+  startTime: string | null;
+  endTime: string | null;
+  isRunning: boolean;
+}
+
+type SystemField = keyof System;
+
+const GridTable: React.FC = () => {
+  const { setDateTime, setSelectedModule } = useContext(CheckContext);
+  const navigate = useNavigate();
+  const [systems, setSystems] = useState<System[]>([]);
+  const [activeModule, setActiveModule] = useState('selectedModule');
+  const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // read from env variable
+        const response = await fetch('https://localhost:7249/api/Adminstration');
+        const data: System[] = await response.json();
+        setSystems(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+
+  useEffect(() => {
+    const savedModule = localStorage.getItem('selectedModule');
+    if (savedModule) {
+      setSelectedModule(savedModule);
+      setActiveModule(savedModule);
     }
-]
+  }, [setSelectedModule]);
+
+  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const newSystems = [...systems];
+    const system = newSystems[index];
+
+    if (field === 'startTime') {
+      if (value && value.getTime() < today) {
+        notify('Start date cannot be in the past', 'warning', 2000);
+        return;
+      }
+      system[field] = value ? value.toISOString() : null;
+    } 
+    else if (field === 'endTime') {
+      if (!system.startTime) {
+        notify('Please select a start date first', 'warning', 2000);
+        return;
+      }
+      if (value && value.getTime() < new Date(system.startTime).getTime()) {
+        notify('End date must be greater than or equal to the start date', 'warning', 2000);
+        return;
+      }
+      system[field] = value ? value.toISOString() : null;
+    }
+
+    newSystems[index] = system;
+    setSystems(newSystems);
+  };
+
+  const dateCellRender = (cellData: any, dateField: SystemField) => {
+    const index = systems.findIndex(system => system.systemID === cellData.data.SystemID);
+    const today = new Date();
+    const isEditing = cellData.data.SystemID === editingRowKey;
+
+    return (
+      <DateBox
+        placeholder='Please Enter Date'
+        type='datetime'
+        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : undefined}
+        min={dateField === 'startTime' ? today : cellData.data.StartTime ? new Date(cellData.data.StartTime) : today}
+        onValueChanged={(e) => handleDateChange(index, dateField, e.value)}
+        displayFormat="yyyy-MM-dd - HH:mm"
+        disabled={!isEditing}
+      />
+    );
+  };
+
+  const systemNameCellRender = (cellData: any) => {
+    return (
+
+      <div>
+        {cellData.data.systemName}
+        {cellData.data.isRunning && <FontAwesomeIcon icon={faSpinner} spin className='spinner' />}
+      </div>
+    );
+  };
+
+
+  const actionCellRender = (cellData: any) => {
+    if (cellData.data.isRunning) {
+      return (
+        <>
+          <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
+          <Button icon="download" />
+          <Button width={100} text="details" type="normal" stylingMode="outlined" />
+        </>
+      );
+    }
+  };
+
+  const countryCellRender = (cellData: any) => (
+    <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} className='countryTB' />
+  );
+
+
+  const onStopClick = (systemID: number) => {
+    const updatedSystems = systems.map(system => {
+      if (system.systemID === systemID) {
+        return { ...system, IsRunning: false };
+      }
+      return system;
+    });
+
+    setSystems(updatedSystems);
+  };
+
+  const onRowUpdating = (e: any) => {
+    const { newData, oldData } = e;
+    const today = new Date().setHours(0, 0, 0, 0);
+    if (newData.StartTime && new Date(newData.StartTime).getTime() < today) {
+      e.cancel = true;
+      notify('Start date cannot be in the past', 'warning', 2000);
+    } else if (newData.EndTime && new Date(newData.EndTime).getTime() < new Date(newData.StartTime || oldData.StartTime).getTime()) {
+      e.cancel = true;
+      notify('End date must be greater than or equal to the start date', 'warning', 2000);
+    }
+  };
+
+  const onEditingStart = (e: any) => {
+    setEditingRowKey(e.key);
+  };
+
+  const onSaved = (e: any) => {
+    setEditingRowKey(null);
+  };
+
+  const onEditCanceling = (e: any) => {
+    setEditingRowKey(null);
+  };
+
+  return (
+    <DataGrid
+      dataSource={systems}
+      showBorders={true}
+      columnAutoWidth={true}
+      rowAlternationEnabled={true}
+      onRowUpdating={onRowUpdating}
+      onEditingStart={onEditingStart}
+      onSaved={onSaved}
+      onEditCanceling={onEditCanceling}
+    >
+
+      <Editing
+        mode="row"
+        allowUpdating={true}
+        useIcons={true}
+        startEditAction="click"
+      />
+
+      <Column
+        dataField="systemName"
+        caption="System"
+        cellRender={systemNameCellRender}
+        width={"10%"}
+        allowEditing={false} />
+
+      <Column dataField="country"
+        caption="Country"
+        allowEditing={false}
+        width={"20%"}
+        cellRender={countryCellRender} />
+
+      <Column
+        width={"25%"}
+        dataField="StartTime"
+        caption="Start Date"
+        dataType='datetime'
+        cellRender={(cellData) => dateCellRender(cellData, 'startTime')}
+      />
+
+
+
+      <Column
+        width={"20%"}
+        dataField="EndTime"
+        caption="End Date"
+        dataType='datetime'
+        cellRender={(cellData) => dateCellRender(cellData, 'endTime')}
+      />
+
+      <Column type="buttons">
+        <GridButton name="edit" icon="edit" visible={(e) => !e.row.data.isRunning && !e.row.isEditing} />
+      </Column>
+
+      <Column
+        caption="Action"
+        cellRender={actionCellRender}
+        allowEditing={false}
+      />
+
+    </DataGrid>
+  );
+};
+
+export default GridTable;
