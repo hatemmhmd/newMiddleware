@@ -1,12 +1,24 @@
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_API}api/Adminstration`);
-        const data: System[] = await response.json();
-        setSystems(data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
+import { HomePage, Adminstartion, PIRSchedule, DataView } from './pages';
+import { withNavigationWatcher } from './contexts/navigation';
+
+const routes = [
+    {
+        path: '/home',
+        element: HomePage,
+    },
+    {
+        path: '/adminstration',
+        element: Adminstartion,
+    },
+    {
+        path: '/schedule',
+        element: PIRSchedule,
+    },
+];
+
+export default routes.map(route => {
+    return {
+        ...route,
+        element: withNavigationWatcher(route.element, route.path)
     };
-    fetchData();
-  }, []);
+});
