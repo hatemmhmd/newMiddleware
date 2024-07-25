@@ -1,1 +1,102 @@
+const recentPIRs = [
+    {
+        "PIRID": 1,
+        "SystemName": "Arabia",
+        "Country": ["Jordan, Palastine"],
+        "StartDate": '17/7/2024, 2:40 PM',
+        "EndDate": '21/2/2024, 1:45 PM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 2,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '20/7/2024, 11:40 PM',
+        "EndDate": '22/7/2024, 3:45 PM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 3,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '15/7/2024, 12:40 PM',
+        "EndDate": '18/7/2024, 1:30 PM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 4,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '21/7/2024, 1:10 PM',
+        "EndDate": '22/7/2024, 6:30 PM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 5,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '16/7/2024, 1:40 PM',
+        "EndDate": '18/7/2024, 3:30 PM',
+        "isRunning": true
+    }
+];
+
+
+
+const PIRHistory = [
+    {
+        "PIRID": 1,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '10/6/2024, 9:20 AM',
+        "EndDate": '12/6/2024, 2:30 AM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 2,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '2/6/2024, 10:00 AM',
+        "EndDate": '4/6/2024, 1:30 AM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 3,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '12/6/2024, 12:00 AM',
+        "EndDate": '14/6/2024, 4:10 AM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 4,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '1/6/2024, 2:20 AM',
+        "EndDate": '4/6/2024, 3:50 AM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 5,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '4/6/2024, 8:00 AM',
+        "EndDate": '6/6/2024, 12:10 AM',
+        "isRunning": true
+    }
+];
+
+
+export const dataSource = [
+    {
+        icon: 'description',
+        title: 'Recent PIR',
+        tasks: recentPIRs,
+    },
+    {
+        icon: 'taskhelpneeded',
+        title: 'PIR history',
+        tasks: PIRHistory
+    },
+];
 
