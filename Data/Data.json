@@ -1,102 +1,310 @@
-const recentPIRs = [
-    {
-        "PIRID": 1,
-        "SystemName": "Arabia",
-        "Country": ["Jordan, Palastine"],
-        "StartDate": '17/7/2024, 2:40 PM',
-        "EndDate": '21/2/2024, 1:45 PM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 2,
-        "SystemName": "FundBot",
-        "Country": ["Jordan"],
-        "StartDate": '20/7/2024, 11:40 PM',
-        "EndDate": '22/7/2024, 3:45 PM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 3,
-        "SystemName": "COB",
-        "Country": ["Jordan , Morocco"],
-        "StartDate": '15/7/2024, 12:40 PM',
-        "EndDate": '18/7/2024, 1:30 PM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 4,
-        "SystemName": "Helios",
-        "Country": ["Jordan"],
-        "StartDate": '21/7/2024, 1:10 PM',
-        "EndDate": '22/7/2024, 6:30 PM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 5,
-        "SystemName": "Reflect",
-        "Country": ["Jordan , Lebanon"],
-        "StartDate": '16/7/2024, 1:40 PM',
-        "EndDate": '18/7/2024, 3:30 PM',
-        "isRunning": true
+import React, { useContext, useEffect, useState } from 'react';
+import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, SearchPanel } from 'devextreme-react/data-grid';
+import DateBox from 'devextreme-react/date-box';
+import { Button } from 'devextreme-react/button';
+import 'devextreme/dist/css/dx.light.css';
+import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
+import notify from 'devextreme/ui/notify';
+import './Adminstration.css';
+import { TagBox } from 'devextreme-react';
+import axios from 'axios';
+
+interface System {
+  systemID: number;
+  pirid: number | null;
+  systemName: string;
+  country: string;
+  startDate: Date | null;
+  endDate: Date | null;
+  isRunning: boolean;
+}
+
+type SystemField = keyof System;
+
+const GridTable: React.FC = () => {
+  const { setDateTime, setSelectedModule } = useContext(CheckContext);
+  const [systems, setSystems] = useState<System[]>([]);
+  // const [activeModule, setActiveModule] = useState('selectedModule');
+  const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
+
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}api/Adminstration`);
+        setSystems(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // useEffect(() => {
+  //   const savedModule = localStorage.getItem('selectedModule');
+  //   if (savedModule) {
+  //     setSelectedModule(savedModule);
+  //     setActiveModule(savedModule);
+  //   }
+  // }, [setSelectedModule]);
+
+  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
+    // const today = new Date().setHours(0, 0, 0, 0);
+    // const newSystems = [...systems];
+    // const system = newSystems[index];
+
+    // if (field === 'startDate') {
+    //   if (value && value.getTime() < today) {
+    //     notify('Start date cannot be in the past', 'warning', 2000);
+    //     return;
+    //   }
+    //   system[field] = value ? value : null;
+    // } else if (field === 'endDate') {
+    //   if (!system.startDate) {
+    //     notify('Please select a start date first', 'warning', 2000);
+    //     return;
+    //   }
+    //   if (value && value.getTime() < new Date(system.startDate).getTime()) {
+    //     notify('End date must be greater than or equal to the start date', 'warning', 2000);
+    //     return;
+    //   }
+    //   system[field] = value ? value : null;
+    // }
+
+    // newSystems[index] = system;
+    // setSystems(newSystems);
+  };
+
+  const dateCellRender = (cellData: any, dateField: SystemField) => {
+    return (
+      <DateBox
+        placeholder='Please enter date'
+        type='datetime'
+        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : ""}
+        readOnly
+      />
+    );
+  };
+
+  const systemNameCellRender = (cellData: any) => {
+    return (
+      <div className="flex-container-system-name">
+        <div>
+          {cellData.data.systemName}
+        </div>
+        <div>
+          {cellData.data.isRunning && <div className="running-text">RUNNING...</div>}
+        </div>
+      </div>
+    );
+  };
+
+  const actionCellRender = (cellData: any) => {
+    debugger
+    if (cellData.data.isRunning) {
+      return (
+        <>
+          <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
+          <Button icon="download" />
+          <Button text="details" type="normal" stylingMode="outlined" />
+        </>
+      );
     }
-];
+  };
 
+  const countryCellRender = (cellData: any) => (
+    <TagBox readOnly value={cellData.data.country.split(",")}
+      dataSource={[]}
+      showClearButton={false}
+      stylingMode="underlined"
+    />
+  );
 
+  const onStopClick = (systemID: number) => {
+    const updatedSystems = systems.map(system => {
+      if (system.systemID === systemID) {
+        return { ...system, isRunning: false };
+      }
+      return system;
+    });
 
-const PIRHistory = [
-    {
-        "PIRID": 1,
-        "SystemName": "Arabia",
-        "Country": ["Jordan , Palastine"],
-        "StartDate": '10/6/2024, 9:20 AM',
-        "EndDate": '12/6/2024, 2:30 AM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 2,
-        "SystemName": "FundBot",
-        "Country": ["Jordan"],
-        "StartDate": '2/6/2024, 10:00 AM',
-        "EndDate": '4/6/2024, 1:30 AM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 3,
-        "SystemName": "COB",
-        "Country": ["Jordan , Morocco"],
-        "StartDate": '12/6/2024, 12:00 AM',
-        "EndDate": '14/6/2024, 4:10 AM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 4,
-        "SystemName": "Helios",
-        "Country": ["Jordan"],
-        "StartDate": '1/6/2024, 2:20 AM',
-        "EndDate": '4/6/2024, 3:50 AM',
-        "isRunning": true
-    },
-    {
-        "PIRID": 5,
-        "SystemName": "Reflect",
-        "Country": ["Jordan , Lebanon"],
-        "StartDate": '4/6/2024, 8:00 AM',
-        "EndDate": '6/6/2024, 12:10 AM',
-        "isRunning": true
+    setSystems(updatedSystems);
+  };
+
+  const onRowUpdating = (e: any) => {
+    const { newData, oldData } = e;
+    const today = new Date().setHours(0, 0, 0, 0);
+
+    if (newData.startDate && new Date(newData.startDate).getTime() < today) {
+      e.cancel = true;
+      notify('Start date cannot be in the past', 'warning', 2000);
+    } else if (!newData.startDate && !oldData.startDate) {
+      e.cancel = true;
+      notify('Start date is required', 'error', 2000);
+    } else if (newData.endDate && new Date(newData.endDate).getTime() < new Date(newData.startDate || oldData.startDate).getTime()) {
+      e.cancel = true;
+      notify('End date must be greater than or equal to the start date', 'warning', 2000);
+    } else if (!newData.endDate && !oldData.endDate) {
+      e.cancel = true;
+      notify('End date is required', 'error', 2000);
     }
-];
+  };
 
 
-export const dataSource = [
-    {
-        icon: 'description',
-        title: 'Recent PIR',
-        tasks: recentPIRs,
-    },
-    {
-        icon: 'taskhelpneeded',
-        title: 'PIR history',
-        tasks: PIRHistory
-    },
-];
+  const Insert = () => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/insertpir`);
+        setSystems(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
 
+  }
+
+  const OnEditingStart = (e: any) => {
+    setEditingRowKey(e.key);
+
+    if (e.data.startDate == null) {
+    }
+
+  };
+
+
+  const sendDataToAPI = async (systemID: number, startDate: string | null, endDate: string | null, editingMode: string) => {
+    try {
+      await fetch(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/${editingMode}pir`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ systemID, startDate, endDate }),
+      });
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  };
+
+  const OnSaved = (e: any) => {
+    setEditingRowKey(null);
+
+    let editingMode = "insert";
+
+
+
+    if (e.changes.data?.pirid)
+      editingMode = "update";
+
+    sendDataToAPI(e.changes[0].data.systemID, e.changes[0].data.startDate, e.changes[0].data.endDate, editingMode);
+
+
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+  const onEditCanceling = (e: any) => {
+    setEditingRowKey(null);
+  };
+
+  return (
+    <DataGrid
+      dataSource={systems}
+      onRowUpdating={onRowUpdating}
+      onEditingStart={OnEditingStart}
+      onSaved={OnSaved}
+      onEditCanceling={onEditCanceling}
+      hoverStateEnabled={true}
+    >
+      <Editing
+        mode="row"
+        allowUpdating={true}
+        useIcons={true}
+        startEditAction="click"
+      />
+
+
+      <FilterRow visible={true} />
+      <Paging defaultPageSize={50} />
+      <Pager
+        visible={true}
+        allowedPageSizes={[10, 20, 50]}
+        showPageSizeSelector={true}
+        showInfo={true}
+        showNavigationButtons={true} />
+
+
+      {/* <SearchPanel
+        visible={true}
+        width={240}
+        placeholder="Search..." /> */}
+
+
+      <Column
+        dataField="systemName"
+        caption="SYSTEM"
+        cellRender={systemNameCellRender}
+        width={"20%"}
+        allowEditing={false} />
+
+      <Column
+        dataField="country"
+        caption="COUNTRY"
+        allowEditing={false}
+        width={"30%"}
+        cellRender={countryCellRender} />
+
+      <Column
+        width={"30%"}
+        dataField="startDate"
+        caption="START DATE"
+        dataType="datetime"
+        cellRender={(cellData) => dateCellRender(cellData, 'startDate')}
+        editorOptions={{
+          displayFormat: "dd/MM/yyyy HH:mm",
+          showClearButton: true,
+          stylingMode: "underlined"
+        }}
+      />
+
+      <Column
+        width={"30%"}
+        dataField="endDate"
+        caption="END DATE"
+        dataType="datetime"
+        cellRender={(cellData) => dateCellRender(cellData, 'endDate')}
+        editorOptions={{
+          displayFormat: "dd/MM/yyyy HH:mm",
+          showClearButton: true,
+          stylingMode: "underlined"
+        }}
+      />
+
+      <Column type="buttons" caption="ACTIONS">
+        <GridButton name="edit" icon="event" disabled={(e) => e.row.data.isRunning} />
+        {/* stop pir, endpoint: stoppir, params {pirid=} */}
+        <GridButton name="edit" icon="square" cssClass={"action-stop"} onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
+        <GridButton name="edit" icon="chart" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
+        <GridButton name="edit" icon="toolbox" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
+        <GridButton name="edit" icon="download" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
+      </Column>
+
+
+
+    </DataGrid >
+  );
+};
+
+export default GridTable;
