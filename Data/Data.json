@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, SearchPanel } from 'devextreme-react/data-grid';
+import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
 import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
 import notify from 'devextreme/ui/notify';
-import './Adminstration.css';
-import { TagBox } from 'devextreme-react';
 import axios from 'axios';
 
 interface System {
@@ -24,10 +22,8 @@ type SystemField = keyof System;
 const GridTable: React.FC = () => {
   const { setDateTime, setSelectedModule } = useContext(CheckContext);
   const [systems, setSystems] = useState<System[]>([]);
-  // const [activeModule, setActiveModule] = useState('selectedModule');
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
-
-
+  const [editingMode, setEditingMode] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,94 +37,34 @@ const GridTable: React.FC = () => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   const savedModule = localStorage.getItem('selectedModule');
-  //   if (savedModule) {
-  //     setSelectedModule(savedModule);
-  //     setActiveModule(savedModule);
-  //   }
-  // }, [setSelectedModule]);
-
-  const handleDateChange = (index: number, field: SystemField, value: Date | null) => {
-    // const today = new Date().setHours(0, 0, 0, 0);
-    // const newSystems = [...systems];
-    // const system = newSystems[index];
-
-    // if (field === 'startDate') {
-    //   if (value && value.getTime() < today) {
-    //     notify('Start date cannot be in the past', 'warning', 2000);
-    //     return;
-    //   }
-    //   system[field] = value ? value : null;
-    // } else if (field === 'endDate') {
-    //   if (!system.startDate) {
-    //     notify('Please select a start date first', 'warning', 2000);
-    //     return;
-    //   }
-    //   if (value && value.getTime() < new Date(system.startDate).getTime()) {
-    //     notify('End date must be greater than or equal to the start date', 'warning', 2000);
-    //     return;
-    //   }
-    //   system[field] = value ? value : null;
-    // }
-
-    // newSystems[index] = system;
-    // setSystems(newSystems);
-  };
-
-  const dateCellRender = (cellData: any, dateField: SystemField) => {
-    return (
-      <DateBox
-        placeholder='Please enter date'
-        type='datetime'
-        value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : ""}
-        readOnly
-      />
-    );
-  };
-
-  const systemNameCellRender = (cellData: any) => {
-    return (
-      <div className="flex-container-system-name">
-        <div>
-          {cellData.data.systemName}
-        </div>
-        <div>
-          {cellData.data.isRunning && <div className="running-text">RUNNING...</div>}
-        </div>
-      </div>
-    );
-  };
-
-  const actionCellRender = (cellData: any) => {
-    debugger
-    if (cellData.data.isRunning) {
-      return (
-        <>
-          <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />
-          <Button icon="download" />
-          <Button text="details" type="normal" stylingMode="outlined" />
-        </>
-      );
-    }
-  };
-
-  const countryCellRender = (cellData: any) => (
-    <TagBox readOnly value={cellData.data.country.split(",")}
-      dataSource={[]}
-      showClearButton={false}
-      stylingMode="underlined"
+  const dateCellRender = (cellData: any, dateField: SystemField) => (
+    <DateBox
+      placeholder='Please enter date'
+      type='datetime'
+      value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : ""}
+      readOnly
     />
   );
 
-  const onStopClick = (systemID: number) => {
-    const updatedSystems = systems.map(system => {
-      if (system.systemID === systemID) {
-        return { ...system, isRunning: false };
-      }
-      return system;
-    });
+  const systemNameCellRender = (cellData: any) => (
+    <div className="flex-container-system-name">
+      <div>{cellData.data.systemName}</div>
+      <div>{cellData.data.isRunning && <div className="running-text">RUNNING...</div>}</div>
+    </div>
+  );
 
+  const actionCellRender = (cellData: any) => (
+    <>
+      {cellData.data.isRunning && <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />}
+    </>
+  );
+
+  const countryCellRender = (cellData: any) => (
+    <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} stylingMode="underlined" />
+  );
+
+  const onStopClick = (systemID: number) => {
+    const updatedSystems = systems.map(system => (system.systemID === systemID ? { ...system, isRunning: false } : system));
     setSystems(updatedSystems);
   };
 
@@ -151,32 +87,9 @@ const GridTable: React.FC = () => {
     }
   };
 
-
-  const Insert = () => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/insertpir`);
-        setSystems(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-
-  }
-
-  const OnEditingStart = (e: any) => {
-    setEditingRowKey(e.key);
-
-    if (e.data.startDate == null) {
-    }
-
-  };
-
-
-  const sendDataToAPI = async (systemID: number, startDate: string | null, endDate: string | null, editingMode: string) => {
+  const sendDataToAPI = async (systemID: number, startDate: string | null, endDate: string | null, mode: string) => {
     try {
-      await fetch(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/${editingMode}pir`, {
+      await fetch(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/${mode}pir`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -188,35 +101,31 @@ const GridTable: React.FC = () => {
     }
   };
 
-  const OnSaved = (e: any) => {
-    setEditingRowKey(null);
-
-    let editingMode = "insert";
-
-
-
-    if (e.changes.data?.pirid)
-      editingMode = "update";
-
-    sendDataToAPI(e.changes[0].data.systemID, e.changes[0].data.startDate, e.changes[0].data.endDate, editingMode);
-
-
+  const OnEditingStart = (e: any) => {
+    setEditingRowKey(e.key);
+    if (!e.data.startDate && !e.data.endDate) {
+      setEditingMode("insert");
+    } else {
+      setEditingMode("update");
+    }
   };
 
+  const OnSaved = (e: any) => {
+    setEditingRowKey(null);
+    const systemID = e.changes[0].data.systemID;
+    const startDate = e.changes[0].data.startDate || null;
+    const endDate = e.changes[0].data.endDate || null;
 
+    if (editingMode) {
+      sendDataToAPI(systemID, startDate, endDate, editingMode);
+    }
 
-
-
-
-
-
-
-
-
-
+    setEditingMode(null);
+  };
 
   const onEditCanceling = (e: any) => {
     setEditingRowKey(null);
+    setEditingMode(null);
   };
 
   return (
@@ -234,8 +143,6 @@ const GridTable: React.FC = () => {
         useIcons={true}
         startEditAction="click"
       />
-
-
       <FilterRow visible={true} />
       <Paging defaultPageSize={50} />
       <Pager
@@ -243,29 +150,23 @@ const GridTable: React.FC = () => {
         allowedPageSizes={[10, 20, 50]}
         showPageSizeSelector={true}
         showInfo={true}
-        showNavigationButtons={true} />
-
-
-      {/* <SearchPanel
-        visible={true}
-        width={240}
-        placeholder="Search..." /> */}
-
+        showNavigationButtons={true}
+      />
 
       <Column
         dataField="systemName"
         caption="SYSTEM"
         cellRender={systemNameCellRender}
         width={"20%"}
-        allowEditing={false} />
-
+        allowEditing={false}
+      />
       <Column
         dataField="country"
         caption="COUNTRY"
         allowEditing={false}
         width={"30%"}
-        cellRender={countryCellRender} />
-
+        cellRender={countryCellRender}
+      />
       <Column
         width={"30%"}
         dataField="startDate"
@@ -278,7 +179,6 @@ const GridTable: React.FC = () => {
           stylingMode: "underlined"
         }}
       />
-
       <Column
         width={"30%"}
         dataField="endDate"
@@ -291,19 +191,14 @@ const GridTable: React.FC = () => {
           stylingMode: "underlined"
         }}
       />
-
       <Column type="buttons" caption="ACTIONS">
-        <GridButton name="edit" icon="event" disabled={(e) => e.row.data.isRunning} />
-        {/* stop pir, endpoint: stoppir, params {pirid=} */}
+        <GridButton name="edit" icon="edit" />
         <GridButton name="edit" icon="square" cssClass={"action-stop"} onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
         <GridButton name="edit" icon="chart" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
         <GridButton name="edit" icon="toolbox" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
         <GridButton name="edit" icon="download" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
       </Column>
-
-
-
-    </DataGrid >
+    </DataGrid>
   );
 };
 
