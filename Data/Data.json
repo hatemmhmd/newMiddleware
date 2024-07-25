@@ -1,205 +1,391 @@
-import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton } from 'devextreme-react/data-grid';
-import DateBox from 'devextreme-react/date-box';
-import { Button } from 'devextreme-react/button';
-import 'devextreme/dist/css/dx.light.css';
-import { CheckContext } from '../../CustomHook'; // Adjust the path as needed
-import notify from 'devextreme/ui/notify';
-import axios from 'axios';
+const PIRHistory = [
+    {
+        "PIRID": 1,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '1/6/2024, 9:20 AM',
+        "EndDate": '2/6/2024, 2:30 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 2,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '3/6/2024, 10:00 AM',
+        "EndDate": '5/6/2024, 10:00 AM',
+        "isRunning": true
+    }, 
+	{
+        "PIRID": 3,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '6/6/2024, 9:20 AM',
+        "EndDate": '8/6/2024, 9:20 AM',
+        "isRunning": true
+    }, 
+	{
+        "PIRID": 4,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '9/6/2024, 9:20 AM',
+        "EndDate": '9/6/2024, 2:20 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 5,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '10/6/2024, 9:20 AM',
+        "EndDate": '12/6/2024, 12:20 AM',
+        "isRunning": true
+    },
+    {
+        "PIRID": 6,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '13/6/2024, 9:20 PM',
+        "EndDate": '15/6/2024, 2:30 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 7,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '16/6/2024, 10:00 PM',
+        "EndDate": '17/6/2024, 12:00 PM',
+        "isRunning": true
+    }, 
+	{
+        "PIRID": 8,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '18/6/2024, 9:00 PM',
+        "EndDate": '20/6/2024, 11:00 PM',
+        "isRunning": true
+    }, 
+	{
+        "PIRID": 9,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '21/6/2024, 9:20 PM',
+        "EndDate": '22/6/2024, 2:20 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 10,
+        "SystemName": "Arabia",
+        "Country": ["Jordan , Palastine"],
+        "StartDate": '23/6/2024, 3:20 PM',
+        "EndDate": '26/6/2024, 6:20 PM',
+        "isRunning": true
+    },
+	
+    {
+        "PIRID": 11,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '1/6/2024, 09:00 AM',
+        "EndDate": '3/6/2024, 12:30 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 12,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '4/6/2024, 10:00 AM',
+        "EndDate": '4/6/2024, 1:30 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 13,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '5/6/2024, 11:00 AM',
+        "EndDate": '7/6/2024, 1:00 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 14,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '8/6/2024, 12:00 AM',
+        "EndDate": '10/6/2024, 1:00 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 15,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '11/6/2024, 02:00 AM',
+        "EndDate": '12/6/2024, 4:30 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 16,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '13/6/2024, 10:00 PM',
+        "EndDate": '15/6/2024, 1:30 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 17,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '2/6/2024, 1:00 PM',
+        "EndDate": '4/6/2024, 2:30 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 18,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '2/6/2024, 12:00 AM',
+        "EndDate": '4/6/2024, 2:30 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 19,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '2/6/2024, 2:00 PM',
+        "EndDate": '4/6/2024, 4:00 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 20,
+        "SystemName": "FundBot",
+        "Country": ["Jordan"],
+        "StartDate": '2/6/2024, 5:00 PM',
+        "EndDate": '4/6/2024, 6:00 PM',
+        "isRunning": true
+    },
+	
+    {
+        "PIRID": 21,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '1/6/2024, 12:00 AM',
+        "EndDate": '2/6/2024, 04:10 AM',
+        "isRunning": true
+    },
+	 {
+        "PIRID": 22,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": 3/6/2024, 02:00 AM',
+        "EndDate": '3/6/2024, 04:10 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 23,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '4/6/2024, 01:00 AM',
+        "EndDate": '6/6/2024, 03:10 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 24,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '7/6/2024, 12:00 AM',
+        "EndDate": '9/6/2024, 02:00 AM',
+        "isRunning": true
+    },
+	 {
+        "PIRID": 25,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '10/6/2024, 12:00 AM',
+        "EndDate": '10/6/2024, 06:00 AM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 26,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '11/6/2024, 12:10 PM',
+        "EndDate": '13/6/2024, 3:10 PM',
+        "isRunning": true
+    },
+	 {
+        "PIRID": 27,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '12/6/2024, 01:00 PM',
+        "EndDate": '14/6/2024, 04:00 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 28,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '12/6/2024, 02:10 PM',
+        "EndDate": '14/6/2024, 04:10 PM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 29,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '12/6/2024, 05:00 PM',
+        "EndDate": '14/6/2024, 06:10 PM',
+        "isRunning": true
+    },
+	 {
+        "PIRID": 30,
+        "SystemName": "COB",
+        "Country": ["Jordan , Morocco"],
+        "StartDate": '15/6/2024, 12:00 PM',
+        "EndDate": '15/6/2024, 4:10 PM',
+        "isRunning": true
+    },
 
-interface System {
-  systemID: number;
-  pirid: number | null;
-  systemName: string;
-  country: string;
-  startDate: Date | null;
-  endDate: Date | null;
-  isRunning: boolean;
-}
-
-type SystemField = keyof System;
-
-const GridTable: React.FC = () => {
-  const { setDateTime, setSelectedModule } = useContext(CheckContext);
-  const [systems, setSystems] = useState<System[]>([]);
-  const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
-  const [editingMode, setEditingMode] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_API}api/Adminstration`);
-        setSystems(response.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const dateCellRender = (cellData: any, dateField: SystemField) => (
-    <DateBox
-      placeholder='Please enter date'
-      type='datetime'
-      value={cellData.data[dateField] ? new Date(cellData.data[dateField]) : ""}
-      readOnly
-    />
-  );
-
-  const systemNameCellRender = (cellData: any) => (
-    <div className="flex-container-system-name">
-      <div>{cellData.data.systemName}</div>
-      <div>{cellData.data.isRunning && <div className="running-text">RUNNING...</div>}</div>
-    </div>
-  );
-
-  const actionCellRender = (cellData: any) => (
-    <>
-      {cellData.data.isRunning && <Button icon="clear" onClick={() => onStopClick(cellData.data.systemID)} />}
-    </>
-  );
-
-  const countryCellRender = (cellData: any) => (
-    <TagBox readOnly value={cellData.data.country.split(",")} dataSource={[]} showClearButton={false} stylingMode="underlined" />
-  );
-
-  const onStopClick = (systemID: number) => {
-    const updatedSystems = systems.map(system => (system.systemID === systemID ? { ...system, isRunning: false } : system));
-    setSystems(updatedSystems);
-  };
-
-  const onRowUpdating = (e: any) => {
-    const { newData, oldData } = e;
-    const today = new Date().setHours(0, 0, 0, 0);
-
-    if (newData.startDate && new Date(newData.startDate).getTime() < today) {
-      e.cancel = true;
-      notify('Start date cannot be in the past', 'warning', 2000);
-    } else if (!newData.startDate && !oldData.startDate) {
-      e.cancel = true;
-      notify('Start date is required', 'error', 2000);
-    } else if (newData.endDate && new Date(newData.endDate).getTime() < new Date(newData.startDate || oldData.startDate).getTime()) {
-      e.cancel = true;
-      notify('End date must be greater than or equal to the start date', 'warning', 2000);
-    } else if (!newData.endDate && !oldData.endDate) {
-      e.cancel = true;
-      notify('End date is required', 'error', 2000);
+	
+    {
+        "PIRID": 31,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '1/6/2024, 02:20 AM',
+        "EndDate": '3/6/2024, 03:50 AM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 32,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '4/6/2024, 12:20 AM',
+        "EndDate": '4/6/2024, 03:50 AM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 34,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '5/6/2024, 04:20 AM',
+        "EndDate": '6/6/2024, 09:50 AM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 35,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '7/6/2024, 6:20 AM',
+        "EndDate": '9/6/2024, 8:50 AM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 36,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '10/6/2024, 2:20 AM',
+        "EndDate": '12/6/2024, 5:50 AM',
+        "isRunning": true
+    },
+	{
+        "PIRID": 37,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '13/6/2024, 3:50 PM',
+        "EndDate": '15/6/2024, 6:50 PM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 38,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '16/6/2024, 2:20 PM',
+        "EndDate": '18/6/2024, 3:50 PM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 39,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '19/6/2024, 6:20 PM',
+        "EndDate": '23/6/2024, 9:50 PM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 40,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '26/6/2024, 9:00 PM',
+        "EndDate": '28/6/2024, 12:50 PM',
+        "isRunning": true
+    },
+	  {
+        "PIRID": 41,
+        "SystemName": "Helios",
+        "Country": ["Jordan"],
+        "StartDate": '29/6/2024, 7:20 PM',
+        "EndDate": '30/6/2024, 12:50 PM',
+        "isRunning": true
+    },
+	
+	
+    {
+        "PIRID": 42,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '1/6/2024, 8:00 AM',
+        "EndDate": '3/6/2024, 12:10 AM',
+        "isRunning": true
     }
-  };
-
-  const sendDataToAPI = async (systemID: number, startDate: string | null, endDate: string | null, mode: string) => {
-    try {
-      await fetch(`${process.env.REACT_APP_BACKEND_API}api/Adminstration/${mode}pir`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ systemID, startDate, endDate }),
-      });
-    } catch (error) {
-      console.log('Error:', error);
+    "PIRID": 43,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '4/6/2024, 8:00 AM',
+        "EndDate": '6/6/2024, 01:10 AM',
+        "isRunning": true
     }
-  };
-
-  const OnEditingStart = (e: any) => {
-    setEditingRowKey(e.key);
-    if (!e.data.startDate && !e.data.endDate) {
-      setEditingMode("insert");
-    } else {
-      setEditingMode("update");
+    "PIRID": 44,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '7/6/2024, 9:00 AM',
+        "EndDate": '8/6/2024, 12:10 AM',
+        "isRunning": true
     }
-  };
-
-  const OnSaved = (e: any) => {
-    setEditingRowKey(null);
-    const systemID = e.changes[0].data.systemID;
-    const startDate = e.changes[0].data.startDate || null;
-    const endDate = e.changes[0].data.endDate || null;
-
-    if (editingMode) {
-      sendDataToAPI(systemID, startDate, endDate, editingMode);
+    "PIRID": 45,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '9/6/2024, 12:00 AM',
+        "EndDate": '9/6/2024, 06:10 AM',
+        "isRunning": true
     }
-
-    setEditingMode(null);
-  };
-
-  const onEditCanceling = (e: any) => {
-    setEditingRowKey(null);
-    setEditingMode(null);
-  };
-
-  return (
-    <DataGrid
-      dataSource={systems}
-      onRowUpdating={onRowUpdating}
-      onEditingStart={OnEditingStart}
-      onSaved={OnSaved}
-      onEditCanceling={onEditCanceling}
-      hoverStateEnabled={true}
-    >
-      <Editing
-        mode="row"
-        allowUpdating={true}
-        useIcons={true}
-        startEditAction="click"
-      />
-      <FilterRow visible={true} />
-      <Paging defaultPageSize={50} />
-      <Pager
-        visible={true}
-        allowedPageSizes={[10, 20, 50]}
-        showPageSizeSelector={true}
-        showInfo={true}
-        showNavigationButtons={true}
-      />
-
-      <Column
-        dataField="systemName"
-        caption="SYSTEM"
-        cellRender={systemNameCellRender}
-        width={"20%"}
-        allowEditing={false}
-      />
-      <Column
-        dataField="country"
-        caption="COUNTRY"
-        allowEditing={false}
-        width={"30%"}
-        cellRender={countryCellRender}
-      />
-      <Column
-        width={"30%"}
-        dataField="startDate"
-        caption="START DATE"
-        dataType="datetime"
-        cellRender={(cellData) => dateCellRender(cellData, 'startDate')}
-        editorOptions={{
-          displayFormat: "dd/MM/yyyy HH:mm",
-          showClearButton: true,
-          stylingMode: "underlined"
-        }}
-      />
-      <Column
-        width={"30%"}
-        dataField="endDate"
-        caption="END DATE"
-        dataType="datetime"
-        cellRender={(cellData) => dateCellRender(cellData, 'endDate')}
-        editorOptions={{
-          displayFormat: "dd/MM/yyyy HH:mm",
-          showClearButton: true,
-          stylingMode: "underlined"
-        }}
-      />
-      <Column type="buttons" caption="ACTIONS">
-        <GridButton name="edit" icon="edit" />
-        <GridButton name="edit" icon="square" cssClass={"action-stop"} onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
-        <GridButton name="edit" icon="chart" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
-        <GridButton name="edit" icon="toolbox" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
-        <GridButton name="edit" icon="download" onClick={() => null} disabled={(e) => !e.row.data.isRunning} />
-      </Column>
-    </DataGrid>
-  );
-};
-
-export default GridTable;
+    "PIRID": 46,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '10/6/2024, 9:00 AM',
+        "EndDate": '12/6/2024, 7:10 AM',
+        "isRunning": true
+    }
+    "PIRID": 47,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '13/6/2024, 5:00 PM',
+        "EndDate": '15/6/2024, 12:10 PM',
+        "isRunning": true
+    }
+    "PIRID": 48,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '16/6/2024, 6:00 PM',
+        "EndDate": '18/6/2024, 12:10 AM',
+        "isRunning": true
+    }
+    "PIRID": 49,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '19/6/2024, 8:00 PM',
+        "EndDate": '23/6/2024, 9:50 PM',
+        "isRunning": true
+    }
+    "PIRID": 50,
+        "SystemName": "Reflect",
+        "Country": ["Jordan , Lebanon"],
+        "StartDate": '25/6/2024, 6:00 PM',
+        "EndDate": '26/6/2024, 12:00 PM',
+        "isRunning": true
+    }
