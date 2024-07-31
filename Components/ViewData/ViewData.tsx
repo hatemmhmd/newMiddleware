@@ -1,13 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, SearchPanel, Scrolling, RequiredRule } from 'devextreme-react/data-grid';
+import React, { useEffect, useState } from 'react';
+import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, Scrolling } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
 import 'devextreme/dist/css/dx.light.css';
 import './Adminstration.css';
-import { TagBox, Validator } from 'devextreme-react';
+import { TagBox } from 'devextreme-react';
 import axios from 'axios';
 import { createCustomStore } from './custom-store';
-import { Validation } from 'devextreme-react/cjs/gantt';
 
 interface System {
   systemID: number;
@@ -22,88 +21,71 @@ interface System {
 type SystemField = keyof System;
 
 const GridTable: React.FC = () => {
-  // const [systems, setSystems] = useState<System[]>([]);
-
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
   const customstore = createCustomStore();
 
-
-
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       customstore.load();
-    }, 180_000)
-  }, [])
+    }, 180000);
+    return () => clearInterval(interval);
+  }, [customstore]);
 
+  const dateCellRender = (cellData: any, dateField: SystemField) => (
+    <DateBox
+      placeholder='Please Enter Date'
+      type='datetime'
+      value={cellData.data[dateField]}
+      displayFormat='dd/MM/yyyy  HH:mm'
+      readOnly
+    />
+  );
 
-  const dateCellRender = (cellData: any, dateField: SystemField) => {
-    return (
-      <DateBox
-        placeholder='Please Enter Date'
-        type='datetime'
-        value={cellData.data[dateField]}
-        displayFormat='dd/MM/yyyy  HH:mm'
-        readOnly
-      />
-    );
-  };
-
-  const systemNameCellRender = (cellData: any) => {
-    return (
-      <div className="flex-container-system-name">
-        <div>
-          {cellData.data.systemName}
-        </div>
-        <div>
-          {cellData.data.isRunning && (
-            <div className="running-text"> <Button icon="datapie" className='spinner' />  </div>
-          )}
-        </div>
+  const systemNameCellRender = (cellData: any) => (
+    <div className="flex-container-system-name">
+      <div>
+        {cellData.data.systemName}
       </div>
-    );
-  };
-
+      <div>
+        {cellData.data.isRunning && (
+          <div className="running-text"><Button icon="datapie" className='spinner' /></div>
+        )}
+      </div>
+    </div>
+  );
 
   const countryCellRender = (cellData: any) => (
-    <TagBox readOnly value={cellData.data.country.split(",")}
-      dataSource={[]}
-      showClearButton={false}
-      stylingMode='underlined'
-    />
+    <TagBox readOnly value={cellData.data.country.split(",")} showClearButton={false} stylingMode='underlined' />
   );
 
   const OnStop = async (pirId: number) => {
     try {
-      await axios.put(
-        `https://localhost:7249/api/Adminstration/Stoppir`,
-        pirId,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
+      await axios.put(`https://localhost:7249/api/Adminstration/Stoppir`, pirId, {
+        headers: {
+          'Content-Type': 'application/json'
         }
-      );
+      });
     } catch (error) {
       console.log('Error:', error);
     }
   };
 
-
-
-
-
-
-
   const onEditCanceling = (e: any) => {
     setEditingRowKey(null);
   };
 
-
+  const onEditingStart = (e: any) => {
+    if (e.data.isRunning) {
+      e.cancel = true;
+      e.component.editCell(e.rowIndex, 'endDate');
+    }
+  };
 
   return (
     <DataGrid
       dataSource={customstore}
       onEditCanceling={onEditCanceling}
+      onEditingStart={onEditingStart}
       hoverStateEnabled={true}
     >
       <Scrolling mode="standard" />
@@ -115,7 +97,6 @@ const GridTable: React.FC = () => {
         startEditAction="click"
       />
 
-
       <FilterRow visible={true} />
       <Paging defaultPageSize={50} />
       <Pager
@@ -123,21 +104,24 @@ const GridTable: React.FC = () => {
         allowedPageSizes={[10, 20, 50]}
         showPageSizeSelector={true}
         showInfo={true}
-        showNavigationButtons={true} />
+        showNavigationButtons={true}
+      />
 
       <Column
         dataField="systemName"
         caption="SYSTEM"
         cellRender={systemNameCellRender}
         width={"20%"}
-        allowEditing={false} />
+        allowEditing={false}
+      />
 
       <Column
         dataField="country"
         caption="COUNTRY"
         allowEditing={false}
         width={"30%"}
-        cellRender={countryCellRender} />
+        cellRender={countryCellRender}
+      />
 
       <Column
         width={"30%"}
@@ -150,6 +134,7 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
+        allowEditing={false}
       />
 
       <Column
@@ -163,10 +148,8 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
+        allowEditing={true}
       />
-
-
-
 
       <Column type="buttons" caption="ACTIONS">
         <GridButton name="edit" icon="event" text='Edit' />
@@ -176,9 +159,7 @@ const GridTable: React.FC = () => {
         <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
       </Column>
 
-
-
-    </DataGrid >
+    </DataGrid>
   );
 };
 
