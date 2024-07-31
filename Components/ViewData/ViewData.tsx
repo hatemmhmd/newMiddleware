@@ -21,7 +21,6 @@ interface System {
 type SystemField = keyof System;
 
 const GridTable: React.FC = () => {
-  const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
   const customstore = createCustomStore();
 
   useEffect(() => {
@@ -71,14 +70,16 @@ const GridTable: React.FC = () => {
   };
 
   const onEditCanceling = (e: any) => {
-    setEditingRowKey(null);
+    // Handle edit canceling
   };
 
   const onEditingStart = (e: any) => {
     if (e.data.isRunning) {
-      e.cancel = true;
-      e.component.editCell(e.rowIndex, 'endDate');
+      if (e.column.dataField !== 'endDate') {
+        e.cancel = true;
+      }
     }
+    // If not running, allow editing both startDate and endDate
   };
 
   return (
@@ -134,7 +135,6 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
-        allowEditing={false}
       />
 
       <Column
@@ -148,7 +148,6 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
-        allowEditing={true}
       />
 
       <Column type="buttons" caption="ACTIONS">
@@ -164,3 +163,4 @@ const GridTable: React.FC = () => {
 };
 
 export default GridTable;
+
