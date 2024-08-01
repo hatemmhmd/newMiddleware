@@ -1,5 +1,5 @@
-تتت
 
+---------------------------
 
 import React, { useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, Scrolling } from 'devextreme-react/data-grid';
@@ -10,6 +10,7 @@ import './Adminstration.css';
 import { TagBox } from 'devextreme-react';
 import axios from 'axios';
 import { createCustomStore } from './custom-store';
+import CustomStore from 'devextreme/data/custom_store';
 
 interface System {
   systemID: number;
@@ -27,12 +28,13 @@ const GridTable: React.FC = () => {
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
   const customstore = createCustomStore();
 
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      customstore.load();
-    }, 180000);
-    return () => clearInterval(interval);
-  }, [customstore]);
+    setInterval(() => {
+      window.location.reload();
+    }, 180_000)
+  }, [])
+
 
   const dateCellRender = (cellData: any, dateField: SystemField) => (
     <DateBox
@@ -67,30 +69,39 @@ const GridTable: React.FC = () => {
 
   const OnStop = async (pirId: number) => {
     try {
-      await axios.put(`https://localhost:7249/api/Adminstration/Stoppir`, pirId, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      await axios.put(`https://localhost:44382/api/Adminstration/Stoppir`,
+        pirId,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
     } catch (error) {
       console.log('Error:', error);
     }
+    window.location.reload();
   };
 
   const onEditCanceling = (e: any) => {
     setEditingRowKey(null);
   };
 
+
+  const [startDate, setStartDate] = useState<boolean>(false);
+  const [endDate, setEndDate] = useState<boolean>(false);
+
+
   const onEditingStart = (e: any) => {
     if (e.data.isRunning) {
-      e.component.columnOption("startDate", "allowEditing", false);
-      e.component.columnOption("endDate", "allowEditing", true);
-    } else {
-      e.component.columnOption("startDate", "allowEditing", true);
-      e.component.columnOption("endDate", "allowEditing", true);
+      setStartDate(false);
+      setEndDate(true);
     }
-    setEditingRowKey(e.key);
-  };
+    else {
+      setStartDate(true);
+      setEndDate(true);
+    }
+  }
+
 
   return (
     <DataGrid
@@ -130,12 +141,12 @@ const GridTable: React.FC = () => {
         dataField="country"
         caption="COUNTRY"
         allowEditing={false}
-        width={"30%"}
+        width={"25%"}
         cellRender={countryCellRender}
       />
 
       <Column
-        width={"30%"}
+        width={"25%"}
         dataField="startDate"
         caption="START DATE"
         dataType="datetime"
@@ -145,11 +156,11 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
-        allowEditing={false}
+        allowEditing={startDate}
       />
 
       <Column
-        width={"30%"}
+        width={"25%"}
         dataField="endDate"
         caption="END DATE"
         dataType="datetime"
@@ -159,10 +170,11 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
-        allowEditing={false} // Set default editing state
+        allowEditing={endDate}
       />
 
-      <Column type="buttons" caption="ACTIONS">
+      <Column type="buttons" caption="ACTIONS" width={"25%"}>
+
         <GridButton name="edit" icon="event" text='Edit' />
         <GridButton name="edit" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
         <GridButton name="edit" icon="chart" onClick={(e) => console.log(e.row?.data)} text='Dashboard' visible={(e) => e.row.data.isRunning} />
