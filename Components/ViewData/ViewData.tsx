@@ -12,7 +12,7 @@ interface System {
   systemID: number;
   pirid: number | null;
   systemName: string;
-  country: string;
+  country: string[];
   startDate: Date | null;
   endDate: Date | null;
   isRunning: boolean;
@@ -21,6 +21,7 @@ interface System {
 type SystemField = keyof System;
 
 const GridTable: React.FC = () => {
+  const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
   const customstore = createCustomStore();
 
   useEffect(() => {
@@ -35,7 +36,7 @@ const GridTable: React.FC = () => {
       placeholder='Please Enter Date'
       type='datetime'
       value={cellData.data[dateField]}
-      displayFormat='dd/MM/yyyy  HH:mm'
+      displayFormat='dd/MM/yyyy  hh:mm aa'
       readOnly
     />
   );
@@ -54,8 +55,13 @@ const GridTable: React.FC = () => {
   );
 
   const countryCellRender = (cellData: any) => (
-    <TagBox readOnly value={cellData.data.country.split(",")} showClearButton={false} stylingMode='underlined' />
+    <TagBox readOnly value={cellData.data.country?.split(',')}
+      dataSource={[]}
+      showClearButton={false}
+      stylingMode="underlined"
+    />
   );
+
 
   const OnStop = async (pirId: number) => {
     try {
@@ -70,24 +76,26 @@ const GridTable: React.FC = () => {
   };
 
   const onEditCanceling = (e: any) => {
-    // Handle edit canceling
+    setEditingRowKey(null);
   };
 
+
+  const [check, setCheck] = useState<boolean>();
+
   const onEditingStart = (e: any) => {
-    if (e.data.isRunning) {
-      if (e.column.dataField !== 'endDate') {
-        e.cancel = true;
-      }
+    if(e.data.isRunning) {
+      
     }
-    // If not running, allow editing both startDate and endDate
   };
+
+
 
   return (
     <DataGrid
       dataSource={customstore}
       onEditCanceling={onEditCanceling}
-      onEditingStart={onEditingStart}
       hoverStateEnabled={true}
+      onEditingStart={onEditingStart}
     >
       <Scrolling mode="standard" />
 
@@ -131,10 +139,11 @@ const GridTable: React.FC = () => {
         dataType="datetime"
         cellRender={(cellData) => dateCellRender(cellData, 'startDate')}
         editorOptions={{
-          displayFormat: "dd/MM/yyyy HH:mm",
+          displayFormat: "dd/MM/yyyy  hh:mm aa",
           showClearButton: true,
           stylingMode: "underlined"
         }}
+
       />
 
       <Column
@@ -144,10 +153,11 @@ const GridTable: React.FC = () => {
         dataType="datetime"
         cellRender={(cellData) => dateCellRender(cellData, 'endDate')}
         editorOptions={{
-          displayFormat: "dd/MM/yyyy HH:mm",
+          displayFormat: "dd/MM/yyyy  hh:mm aa",
           showClearButton: true,
           stylingMode: "underlined"
         }}
+        allowEditing={check}
       />
 
       <Column type="buttons" caption="ACTIONS">
@@ -158,9 +168,9 @@ const GridTable: React.FC = () => {
         <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
       </Column>
 
+
     </DataGrid>
   );
 };
 
 export default GridTable;
-
