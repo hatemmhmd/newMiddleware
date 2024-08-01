@@ -1,3 +1,6 @@
+تتت
+
+
 import React, { useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, Scrolling } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
@@ -62,7 +65,6 @@ const GridTable: React.FC = () => {
     />
   );
 
-
   const OnStop = async (pirId: number) => {
     try {
       await axios.put(`https://localhost:7249/api/Adminstration/Stoppir`, pirId, {
@@ -79,16 +81,16 @@ const GridTable: React.FC = () => {
     setEditingRowKey(null);
   };
 
-
-  const [check, setCheck] = useState<boolean>();
-
   const onEditingStart = (e: any) => {
-    if(e.data.isRunning) {
-      
+    if (e.data.isRunning) {
+      e.component.columnOption("startDate", "allowEditing", false);
+      e.component.columnOption("endDate", "allowEditing", true);
+    } else {
+      e.component.columnOption("startDate", "allowEditing", true);
+      e.component.columnOption("endDate", "allowEditing", true);
     }
+    setEditingRowKey(e.key);
   };
-
-
 
   return (
     <DataGrid
@@ -143,7 +145,7 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
-
+        allowEditing={false}
       />
 
       <Column
@@ -157,7 +159,7 @@ const GridTable: React.FC = () => {
           showClearButton: true,
           stylingMode: "underlined"
         }}
-        allowEditing={check}
+        allowEditing={false} // Set default editing state
       />
 
       <Column type="buttons" caption="ACTIONS">
@@ -167,8 +169,6 @@ const GridTable: React.FC = () => {
         <GridButton name="edit" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Details' />
         <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
       </Column>
-
-
     </DataGrid>
   );
 };
