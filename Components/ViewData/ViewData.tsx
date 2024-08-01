@@ -1,5 +1,5 @@
 
----------------------------
+-----------------------pp
 
 import React, { useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, Scrolling } from 'devextreme-react/data-grid';
@@ -10,7 +10,6 @@ import './Adminstration.css';
 import { TagBox } from 'devextreme-react';
 import axios from 'axios';
 import { createCustomStore } from './custom-store';
-import CustomStore from 'devextreme/data/custom_store';
 
 interface System {
   systemID: number;
@@ -26,15 +25,16 @@ type SystemField = keyof System;
 
 const GridTable: React.FC = () => {
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false); // Track editing state
   const customstore = createCustomStore();
 
-
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       window.location.reload();
-    }, 180_000)
-  }, [])
+    }, 180000); // Reload every 3 minutes
 
+    return () => clearInterval(interval);
+  }, []);
 
   const dateCellRender = (cellData: any, dateField: SystemField) => (
     <DateBox
@@ -69,13 +69,11 @@ const GridTable: React.FC = () => {
 
   const OnStop = async (pirId: number) => {
     try {
-      await axios.put(`https://localhost:44382/api/Adminstration/Stoppir`,
-        pirId,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
+      await axios.put(`https://localhost:44382/api/Adminstration/Stoppir`, pirId, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     } catch (error) {
       console.log('Error:', error);
     }
@@ -83,32 +81,33 @@ const GridTable: React.FC = () => {
   };
 
   const onEditCanceling = (e: any) => {
-    setEditingRowKey(null);
+    setIsEditing(false); // Reset editing state
   };
-
-
-  const [startDate, setStartDate] = useState<boolean>(false);
-  const [endDate, setEndDate] = useState<boolean>(false);
-
 
   const onEditingStart = (e: any) => {
     if (e.data.isRunning) {
-      setStartDate(false);
-      setEndDate(true);
+      setIsEditing(true); // Set editing state
+      e.component.columnOption("startDate", "allowEditing", false);
+      e.component.columnOption("endDate", "allowEditing", true);
+    } else {
+      setIsEditing(true); // Set editing state
+      e.component.columnOption("startDate", "allowEditing", true);
+      e.component.columnOption("endDate", "allowEditing", true);
     }
-    else {
-      setStartDate(true);
-      setEndDate(true);
-    }
-  }
+    setEditingRowKey(e.key);
+  };
 
+  const onSaved = () => {
+    setIsEditing(false); // Reset editing state after save
+  };
 
   return (
     <DataGrid
       dataSource={customstore}
       onEditCanceling={onEditCanceling}
-      hoverStateEnabled={true}
       onEditingStart={onEditingStart}
+      onSaved={onSaved} // Reset editing state after save
+      hoverStateEnabled={true}
     >
       <Scrolling mode="standard" />
 
@@ -174,12 +173,15 @@ const GridTable: React.FC = () => {
       />
 
       <Column type="buttons" caption="ACTIONS" width={"25%"}>
-
-        <GridButton name="edit" icon="event" text='Edit' />
-        <GridButton name="edit" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
-        <GridButton name="edit" icon="chart" onClick={(e) => console.log(e.row?.data)} text='Dashboard' visible={(e) => e.row.data.isRunning} />
-        <GridButton name="edit" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Details' />
-        <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
+        {!isEditing && (
+          <>
+            <GridButton name="edit" icon="event" text='Edit' />
+            <GridButton name="edit" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
+            <GridButton name="edit" icon="chart" onClick={(e) => console.log(e.row?.data)} text='Dashboard' visible={(e) => e.row.data.isRunning} />
+            <GridButton name="edit" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Details' />
+            <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
+          </>
+        )}
       </Column>
     </DataGrid>
   );
