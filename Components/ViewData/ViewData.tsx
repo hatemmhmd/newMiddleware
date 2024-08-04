@@ -1,5 +1,7 @@
 ---------------------- 0000000000 ------------------------
 
+
+
 import React, { useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, Scrolling } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
@@ -27,13 +29,13 @@ const GridTable: React.FC = () => {
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
   const customstore = createCustomStore();
 
-
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       window.location.reload();
-    }, 180_000)
-  }, [])
+    }, 180_000);
 
+    return () => clearInterval(interval);
+  }, []);
 
   const dateCellRender = (cellData: any, dateField: SystemField) => (
     <DateBox
@@ -82,31 +84,33 @@ const GridTable: React.FC = () => {
   };
 
   const onEditCanceling = (e: any) => {
+    setEditingRowKey(null);
   };
-
 
   const [startDate, setStartDate] = useState<boolean>(false);
   const [endDate, setEndDate] = useState<boolean>(false);
 
-
   const onEditingStart = (e: any) => {
+    setEditingRowKey(e.data.systemID);
 
     if (e.data.isRunning) {
       setStartDate(false);
       setEndDate(true);
-
-    }
-    else {
+    } else {
       setStartDate(true);
       setEndDate(true);
     }
-  }
+  };
 
+  const onSaved = () => {
+    setEditingRowKey(null);
+  };
 
   return (
     <DataGrid
       dataSource={customstore}
       onEditCanceling={onEditCanceling}
+      onSaved={onSaved}
       hoverStateEnabled={true}
       onEditingStart={onEditingStart}
     >
@@ -174,12 +178,15 @@ const GridTable: React.FC = () => {
       />
 
       <Column type="buttons" caption="ACTIONS" width={"25%"}>
-
         <GridButton name="edit" icon="event" text='Edit' />
-        <GridButton name="edit" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
-        <GridButton name="edit" icon="chart" onClick={(e) => console.log(e.row?.data)} text='Dashboard' visible={(e) => e.row.data.isRunning} />
-        <GridButton name="edit" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Details' />
-        <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
+        {editingRowKey === null && (
+          <>
+            <GridButton name="edit" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
+            <GridButton name="edit" icon="chart" onClick={(e) => console.log(e.row?.data)} text='Dashboard' visible={(e) => e.row.data.isRunning} />
+            <GridButton name="edit" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Details' />
+            <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning} text='Download' />
+          </>
+        )}
       </Column>
     </DataGrid>
   );
