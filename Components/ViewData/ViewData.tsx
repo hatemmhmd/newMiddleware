@@ -1,5 +1,21 @@
 https://js.devexpress.com/React/Demos/WidgetsGallery/Demo/DataGrid/CommandColumnCustomization/MaterialBlueLight/
 Command Column Customization
+
+
+  const isChief = (position: string) => position;
+
+  const isCloneIconVisible = (e: any) => !e.row.isEditing;
+
+  const onEditorPreparing = (e: DataGridTypes.EditorPreparingEvent) => {
+    if (e.parentType === 'dataRow' && e.dataField === 'Position') {
+      e.editorOptions.readOnly = isChief(e.value);
+    }
+  };
+
+onEditorPreparing={onEditorPreparing} // Inside DateBox
+
+visible={isCloneIconVisible} // Inside Icon (Stop , Download , Chart)
+
 ---------------------------------------------------------------------------------------------------------------------------------
 
 
