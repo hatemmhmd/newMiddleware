@@ -1,14 +1,15 @@
-------------------------
+000000000
 
 import CustomStore from 'devextreme/data/custom_store';
 import axios, { AxiosError } from 'axios';
 import notify from 'devextreme/ui/notify';
 import _ from 'lodash';
-import { useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import DateBox from 'devextreme-react/date-box';
 
-export function createCustomStore() {
+export function createCustomStore(dateRef: React.RefObject<any>, setFocus: (focusField: string) => void) {
     let fullDataCache: any[] = [];
-    const sucessHandler = (mode: "update" | "delete") => {
+    const successHandler = (mode: "update" | "delete") => {
         let msg = `${mode.toUpperCase()} request submitted successfully! It is on the way for Checker review`;
         notify(msg, "success", 3000);
     }
@@ -16,6 +17,7 @@ export function createCustomStore() {
     const exceptionHandler = (error: any) => {
         if (error instanceof AxiosError) {
             if (axios.isAxiosError(error) && error.response?.status === 401) {
+                // Handle 401 error
             }
         } else if (typeof error === "string") {
             let msg = `Error: ${error}`;
@@ -66,22 +68,22 @@ export function createCustomStore() {
                 : "https://localhost:44382/api/Adminstration/updatepir"
             let result: any = _.cloneDeep({ ...key, ...values });
 
-            debugger;
-
-            const today = new Date().toLocaleDateString()
+            const today = new Date().toLocaleDateString();
             if (result.startDate == null || result.endDate == null) {
                 notify('Start And End Date Is Required', 'error', 2000);
+                setFocus(result.startDate == null ? 'startDate' : 'endDate');
                 return Promise.resolve();
             }
             if (result.startDate && new Date(result.startDate).toLocaleDateString() < today) {
                 notify('Start Date Cannot Be In The Past', 'error', 2000);
+                setFocus('startDate');
                 return Promise.resolve();
             }
             if (result.endDate && new Date(result.endDate).getTime() < new Date(result.startDate || result.startDate).getTime()) {
                 notify('End date must be greater than or equal to the start date', 'warning', 2000);
+                setFocus('endDate');
                 return Promise.resolve();
             }
-
 
             if (result.pirid == null) {
                 return axios.post(
@@ -98,12 +100,11 @@ export function createCustomStore() {
                     }
                 )
                     .then(() => {
-                        sucessHandler("update");
+                        successHandler("update");
                     }).catch((error) => {
                         exceptionHandler(error);
                     })
-            }
-            else {
+            } else {
                 return axios.put(
                     api,
                     {
@@ -119,12 +120,44 @@ export function createCustomStore() {
                     }
                 )
                     .then(() => {
-                        sucessHandler("update");
+                        successHandler("update");
                     }).catch((error) => {
                         exceptionHandler(error);
                     })
             }
         },
     });
+
     return myStore;
 }
+
+// In your component
+const MyComponent = () => {
+    const dateRef = useRef<any>(null);
+    const [focusField, setFocusField] = useState<string | null>(null);
+
+    const store = createCustomStore(dateRef, setFocusField);
+
+    // Handle focus after error notification
+    React.useEffect(() => {
+        if (focusField && dateRef.current) {
+            dateRef.current.instance.focus();
+        }
+    }, [focusField]);
+
+    return (
+        <div>
+            <DateBox
+                ref={dateRef}
+                type="date"
+                // Bind start and end dates to state or context here
+                // For example:
+                // value={startDate}
+                // onValueChanged={(e) => setStartDate(e.value)}
+            />
+            {/* Your other components and logic */}
+        </div>
+    );
+}
+
+export default MyComponent;
