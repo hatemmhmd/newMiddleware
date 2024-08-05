@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DataGrid, { Column, Editing, FilterRow, Pager, Paging, Button as GridButton, Scrolling } from 'devextreme-react/data-grid';
 import DateBox from 'devextreme-react/date-box';
 import { Button } from 'devextreme-react/button';
@@ -7,7 +7,6 @@ import './Adminstration.css';
 import { TagBox } from 'devextreme-react';
 import axios from 'axios';
 import { createCustomStore } from './custom-store';
-import CustomStore from 'devextreme/data/custom_store';
 
 interface System {
   systemID: number;
@@ -25,15 +24,12 @@ const GridTable: React.FC = () => {
   const [editingRowKey, setEditingRowKey] = useState<number | null>(null);
   const customstore = createCustomStore();
 
-
   useEffect(() => {
-    setInterval(() => {
+    const interval = setInterval(() => {
       window.location.reload();
-    }, 180_000)
-  }, [])
-
-
-
+    }, 180_000);
+    return () => clearInterval(interval);
+  }, []);
 
   const dateCellRender = (cellData: any, dateField: SystemField) => (
     <DateBox
@@ -84,43 +80,29 @@ const GridTable: React.FC = () => {
     window.location.reload();
   };
 
-
-
-  const onEditCanceling = (e: any) => {
-    setCheck(true);
+  const onEditCanceling = () => {
+    setEditingRowKey(null);
   };
-
 
   const [startDate, setStartDate] = useState<boolean>(false);
   const [endDate, setEndDate] = useState<boolean>(false);
   const [check, setCheck] = useState<boolean>(false);
 
-
-
-  const [currentEditedPirID, setCurrentEditedPirID] = useState<number>();
-
-
-
   const onEditingStart = (e: any) => {
-
-    console.log(currentEditedPirID)
-
+    setEditingRowKey(e.key);
 
     if (e.data.isRunning) {
       setStartDate(false);
       setEndDate(true);
-    }
-
-    else {
+    } else {
       setStartDate(true);
       setEndDate(true);
     }
-  }
+  };
 
   const onSave = () => {
-    setCheck(true);
-  }
-
+    setEditingRowKey(null);
+  };
 
   return (
     <DataGrid
@@ -131,8 +113,6 @@ const GridTable: React.FC = () => {
       onSaved={onSave}
     >
       <Scrolling mode="standard" />
-
-
 
       <Editing
         mode="row"
@@ -196,12 +176,11 @@ const GridTable: React.FC = () => {
       />
 
       <Column type="buttons" caption="ACTIONS" width={"25%"}>
-
         <GridButton name="edit" icon="event" text='Edit' />
-        <GridButton name="edit" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
-        <GridButton name="edit" icon="chart" text='Dashboard' visible={true} />
-        <GridButton name="edit" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning && check} text='Details' />
-        <GridButton name="edit" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning && check} text='Download' />
+        <GridButton name="stop" icon="square" cssClass={"action-stop"} visible={(e) => e.row.data.isRunning && editingRowKey !== e.row.key} onClick={(e) => { OnStop(e.row?.data.pirid) }} text='Stop' />
+        <GridButton name="chart" icon="chart" text='Dashboard' visible={(e) => editingRowKey !== e.row.key} />
+        <GridButton name="toolbox" icon="toolbox" onClick={() => null} visible={(e) => e.row.data.isRunning && check && editingRowKey !== e.row.key} text='Details' />
+        <GridButton name="download" icon="download" onClick={() => null} visible={(e) => e.row.data.isRunning && check && editingRowKey !== e.row.key} text='Download' />
       </Column>
     </DataGrid>
   );
